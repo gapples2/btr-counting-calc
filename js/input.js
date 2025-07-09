@@ -21,12 +21,34 @@ function loadData() {
     realData = JSON.parse(save)
 }
 
+function parseNumeric(input) {
+    let num = Number(input.value)
+    if(!Number.isNaN(num) && !input.value.endsWith(".")) {
+        data[input.id] = num
+        input.style.borderColor = "white"
+        update()
+    }else{
+        input.style.borderColor = "red"
+    }
+}
+
 function initializeInputs() {
     let inputs = document.getElementsByTagName("input")
     for(let x = 0; x < inputs.length; x++) {
         let input = inputs[x]
         switch(input.type){
         case "checkbox":
+            if(input.id == "count-help-isletter") {
+                placeholders[input.id] = false
+                input.addEventListener("change", () => {
+                    data[input.id] = input.checked
+                    if(input.checked) {
+                        document.getElementById("count-help-current").value = calcThread.convertLetterNotation(data["count-help-current"])
+                    }else{
+                        document.getElementById("count-help-current").value = calcMsgs.expFormat(data["count-help-current"], 4)
+                    }
+                })
+            }
             placeholders[input.id] = false
             input.addEventListener("change", () => {
                 data[input.id] = input.checked
@@ -41,6 +63,26 @@ function initializeInputs() {
             })
             break;
         default:
+            if(input.id == "count-help-current") {
+                placeholders[input.id] = 0
+                input.addEventListener("input", () => {
+                    if(input.value.length == 0) {
+                        delete realData[input.id]
+                        update()
+                        return;
+                    }
+                    if(data["count-help-isletter"]) {
+                        if(/[A-Z]+$/.test(input.value)) {
+                            data[input.id] = calcThread.parseLetterNotation(input.value)
+                            input.style.borderColor = "white"
+                            update()
+                        }else{
+                            input.style.borderColor = "red"
+                        }
+                    }else parseNumeric(input)
+                })
+                break;
+            }
             placeholders[input.id] = Number(input.placeholder)
             input.addEventListener("input", () => {
                 if(input.value.length == 0) {
@@ -48,14 +90,7 @@ function initializeInputs() {
                     update()
                     return;
                 }
-                let num = Number(input.value)
-                if(!Number.isNaN(num) && !input.value.endsWith(".")) {
-                    data[input.id] = num
-                    input.style.borderColor = "white"
-                    update()
-                }else{
-                    input.style.borderColor = "red"
-                }
+                parseNumeric(input)
             })
             break;
         }
@@ -65,14 +100,28 @@ function initializeInputs() {
         let ele =document.getElementById(arr[0])
         if(ele === null){
             delete realData[arr[0]]
-        }else ele.value = arr[1]
+        }else{
+            if(ele.id == "count-help-current" && data["count-help-isletter"]) {
+                ele.value = calcThread.convertLetterNotation(arr[1])
+                return;
+            }
+            ele.value = arr[1]
+        }
     })
 
-    document.getElementById("thread-help-button").addEventListener("click", () => {
-        let count = calcMsgs.expFormat(data["thread-help-count"] + data["thread-help-cpm"] * 2, 3)
-        document.getElementById("thread-help-count").value = count
-        data["thread-help-count"] = Number(count)
-        navigator.clipboard.writeText(count)
+    document.getElementById("count-help-button").addEventListener("click", () => {
+        if(data["count-help-isletter"]) {
+            let count = data["count-help-current"] + data["count-help-cpm"] * 2
+            let asLetter = calcThread.convertLetterNotation(count)
+            document.getElementById("count-help-current").value = asLetter
+            data["count-help-current"] = count
+            navigator.clipboard.writeText(asLetter)
+        }else{
+            let count = calcMsgs.expFormat(data["count-help-current"] + data["count-help-cpm"] * 2, 4)
+            document.getElementById("count-help-current").value = count
+            data["count-help-current"] = Number(count)
+            navigator.clipboard.writeText(count)
+        }
     })
 }
 
