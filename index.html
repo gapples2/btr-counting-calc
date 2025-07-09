@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>btr calc</title>
+
+        <script src="js/calc.js"></script>
+        <script src="js/update.js" defer></script>
+        <script src="js/input.js" defer></script>
+
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div id="msg">
+            <h2 class="row">least messages</h2>
+            <div class="row">
+                <label for="msg-least">least messages:</label><input id="msg-least" placeholder="800">
+            </div>
+            <div class="row">
+                <label for="msg-completions">times completed:</label><input id="msg-completions" placeholder="0">
+            </div>
+            <div class="row">
+                <label for="msg-upg1">upg 1</label><input id="msg-upg1" type="checkbox">
+                <label for="msg-upg2">upg 2</label><input id="msg-upg2" type="checkbox">
+                <label for="msg-upg3">upg 3</label><input id="msg-upg3" type="checkbox">
+                <label for="msg-upg4">upg 4</label><input id="msg-upg4" type="checkbox">
+                <label for="msg-upg5">upg 5</label><input id="msg-upg5" type="checkbox">
+                <label for="msg-upg6">upg 6</label><input id="msg-upg6" type="checkbox">
+                <label for="msg-upg7">upg 7</label><input id="msg-upg7" type="checkbox">
+            </div>
+            <div class="row">
+                <label for="msg-red">red roles (<span id="msg-red-num">2</span>):</label><input id="msg-red" type="range" value="2" min="0" max="2" step="1">
+            </div>
+            <div class="row">
+                <label for="msg-sigfig"># of significant figures (for cpm):</label><input id="msg-sigfig" placeholder="3">
+            </div>
+            <div class="row" style="width:100%">
+                <div class="overflow row" id="msg-chain" style="height:75px;justify-content:left;z-index: 1000"></div>
+            </div>
+        </div>
+        <div id="time">
+            <h2 class="row">least time</h2>
+            <div class="row">
+                <label for="time-least">least time:</label><input id="time-least" placeholder="800">
+            </div>
+            <div class="row">
+                <label for="time-factor">factor worth:</label><input id="time-factor" placeholder="0">
+            </div>
+        </div>
+        <div id="thread">
+            <h2 class="row">least threads</h2>
+            <div class="row">
+                <label for="thread-ntl-convert">number</label><input id="thread-ntl-convert" placeholder="1">
+            </div>
+            <div id="thread-ntl-result" class="row">A</div>
+        </div>
+        <div id="count-help">
+            <h2 class="row">count helper</h2>
+            <div class="row">
+                <label for="thread-help-count">current count:</label><input id="thread-help-count" placeholder="A" data-isletter="true">
+            </div>
+            <div class="row">
+                <label for="thread-help-cpm">cpm:</label><input id="thread-help-cpm" placeholder="1">
+            </div>
+            <div class="row">
+                <button id="thread-help-button" style="width:300px;height:70px;font-size:23px;">count (copy + paste)</button>
+            </div>
+        </div>
+    </body>
+</html>

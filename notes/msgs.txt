@@ -1,0 +1,10 @@
+base goal: 200, scaling is 1000x
+effect formula: round(sqrt(800 / msgs) * sqrt(800) ^ completions)
+which multiplies msg cpm
+
+upgrade chips at:
+70 msgs
+15 msgs
+3? msgs
+1 msg
+

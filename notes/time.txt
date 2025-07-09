@@ -1,0 +1,4 @@
+goal: 200
+formula: round(sqrt(800 / time) * sqrt(1600) ^ factor)
+min time: 0.5s
+
