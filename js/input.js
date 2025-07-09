@@ -38,8 +38,8 @@ function initializeInputs() {
         let input = inputs[x]
         switch(input.type){
         case "checkbox":
+            placeholders[input.id] = false
             if(input.id == "count-help-isletter") {
-                placeholders[input.id] = false
                 input.addEventListener("change", () => {
                     data[input.id] = input.checked
                     if(input.checked) {
@@ -49,7 +49,6 @@ function initializeInputs() {
                     }
                 })
             }
-            placeholders[input.id] = false
             input.addEventListener("change", () => {
                 data[input.id] = input.checked
                 update()
@@ -110,14 +109,17 @@ function initializeInputs() {
     })
 
     document.getElementById("count-help-button").addEventListener("click", () => {
+        let mult = data["count-help-firstcounter"] ? 1 : 2
+        data["count-help-firstcounter"] = false
+        document.getElementById("count-help-firstcounter").checked = false
         if(data["count-help-isletter"]) {
-            let count = data["count-help-current"] + data["count-help-cpm"] * 2
+            let count = data["count-help-current"] + data["count-help-cpm"] * mult
             let asLetter = calcThread.convertLetterNotation(count)
             document.getElementById("count-help-current").value = asLetter
             data["count-help-current"] = count
             navigator.clipboard.writeText(asLetter)
         }else{
-            let count = calcMsgs.expFormat(data["count-help-current"] + data["count-help-cpm"] * 2, 4)
+            let count = calcMsgs.expFormat(data["count-help-current"] + data["count-help-cpm"] * mult, 4)
             document.getElementById("count-help-current").value = count
             data["count-help-current"] = Number(count)
             navigator.clipboard.writeText(count)
