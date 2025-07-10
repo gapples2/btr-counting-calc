@@ -39,3 +39,19 @@ label {
     overflow-x: auto;
     overflow-y: hidden;
 }
+
+.title {
+    font-size: 25px;
+}
+
+.collapse {
+    width: 100px;
+}
+
+.space-below {
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    font-size: 22px;
+}

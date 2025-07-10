@@ -3,6 +3,24 @@ function multGTZ(num, mult) {
     return num
 }
 
+const calcGeneral = {
+    expFormat(num, p=2) {
+        if(!Number.isFinite(num))return "Infinity"
+        if(num < 1000)return (Math.floor(num * 10 ** p) / 10 ** p).toFixed(0)
+        let e = Math.floor(Math.log10(num))
+        let m = num / 10 ** e
+        p = Math.min(p, e)
+        m = Math.floor(m * 10 ** p) / 10 ** p
+        m = m.toFixed(p).replace(/0+$/,"")
+        if(m.endsWith("."))m = m.slice(0, -1)
+        return m + "e" + e.toFixed(0)
+    },
+    formatWhole(num) {
+        if(num < 1e9)return num.toLocaleString("en-US", {maximumFractionDigits: 0})
+        return this.expFormat(num)
+    },
+}
+
 const calcMsgs = {
     upgBoost() {
         let mult = 1
@@ -26,19 +44,6 @@ const calcMsgs = {
     expectedMsgs(cpm=this.cpm(data)) {
         return Math.ceil(this.goal() / cpm)
     },
-    expFormat(num, p=2) {
-        if(!Number.isFinite(num))return "Infinity"
-        if(num < 1000)return (Math.floor(num * 10 ** p) / 10 ** p).toFixed(0)
-        let e = Math.floor(Math.log10(num))
-        let m = num / 10 ** e
-        p = Math.min(p, e)
-        m = Math.floor(m * 10 ** p) / 10 ** p
-        return m.toFixed(p).replace(/0+$/,"") + "e" + e.toFixed(0)
-    },
-    formatWhole(num) {
-        if(num < 1e9)return num.toLocaleString("en-US", {maximumFractionDigits: 0})
-        return this.expFormat(num)
-    },
     msgChain() {
         let arr = []
         let originalMsg = realData["msg-least"]
@@ -48,7 +53,7 @@ const calcMsgs = {
         return arr
     },
     msgChainRecursion(arr) {
-        let cpm = this.expFormat(this.cpm(), data["msg-sigfig"] - 1)
+        let cpm = calcGeneral.expFormat(this.cpm(), data["general-sigfig"] - 1)
         let msgs = this.expectedMsgs(Number(cpm) * (data["msg-red"] + 1))
         if(!Number.isFinite(Number(cpm)) || !Number.isFinite(msgs))return;
         if(data["msg-red"] == 1 && (msgs % 2) == 0 && Number(cpm) * (msgs - 2) * 2 + Number(cpm) * 3 >= this.goal())msgs--
@@ -62,6 +67,72 @@ const calcMsgs = {
 const calcTime = {
     msgBoost() {
         return Math.sqrt(800 / data["time-least"]) * Math.sqrt(1600) ** data["time-factor"]
+    },
+    memberBoost() {
+        return Math.sqrt(data["time-zen"] / 1000)
+    },
+    cpm() {
+        let cpm = calcMember.timeBoost()
+        if(data["msg-upg4"])cpm = Math.round(calcMsgs.upgBoost())
+        if(data["msg-upg5"])cpm *= 3
+        cpm *= 3 ** data["thread-coins-upg2"]
+        if(data["general-red"])cpm *= 3
+        return cpm
+    }
+}
+
+const calcMember = {
+    timeBoost() {
+        return Math.round(Math.sqrt(32) ** (data["member-completions"] + 1) / Math.sqrt(data["member-least"]))
+    },
+    cpm() {
+        let cpm = calcTime.memberBoost()
+        if(data["msg-upg9"])cpm *= 10
+        cpm = Math.round(cpm)
+        if(data["general-red"])cpm *= 3
+        return cpm
+    },
+    goal() {
+        return 24 * 100 ** data["member-completions"]
+    },
+    estimatedMembersNoMinmax() {
+        let originalRed = data["general-red"]
+        data["general-red"] = true
+        let cpm = this.cpm()
+        data["general-red"] = originalRed
+        let goal = this.goal()
+        if(data["msg-upg8"] && data["msg-upg9"])return Math.ceil(goal / (cpm * 6))
+        return Math.ceil(goal / (cpm * 3))
+    },
+    estimatedMembers() {
+        if(!data["member-minmax"])return this.estimatedMembersNoMinmax()
+        let originalRed = data["general-red"]
+        data["general-red"] = true
+        let rcpm = this.cpm()
+        let goal = this.goal()
+        if(rcpm >= goal) {
+            data["general-red"] = originalRed
+            return 1
+        }
+        data["general-red"] = false
+        let gcpm = this.cpm()
+        let originalUpg9 = data["msg-upg9"]
+        data["msg-upg9"] = false
+        let lowcpm = this.cpm()
+        data["msg-upg9"] = originalUpg9
+        data["general-red"] = originalRed
+        let cpm = 0
+        if(data["msg-upg8"] && data["msg-upg9"]) {
+            // 6 counts with red role, 3 counts with green role
+            cpm = rcpm * 6 + gcpm * 3
+        }else if(data["msg-upg8"] || data["msg-upg9"]){
+            // 3 counts with red role, 3 counts with green role, 3 counts with green role and upg 8
+            cpm = rcpm * 3 + gcpm * 3 + lowcpm * 3
+        }else{
+            // 3 counts with red role, 3 counts with green role
+            cpm = rcpm * 3 + gcpm * 3
+        }
+        return Math.ceil(goal / cpm)
     }
 }
 
@@ -70,8 +141,78 @@ const calcThread = {
         return str.split("").reverse().map((char, index) => (char.charCodeAt() - 64) * 26 ** index).reduce((p, c) => p + c, 0)
     },
     convertLetterNotation(num) {
-        // todo: make this not absolute garbage
+        // todo: make this not garbage
+        if(num<=0)return ""
         let len = num.toString(26).length - (/[01]+0/).test(num.toString(26))
         return (num-(26**len-1)/25).toString(26).split("").map(char => char.charCodeAt()).map(num => num < 60 ? num + 17 : num - 22).map(num => String.fromCharCode(num)).join("").padStart(len,"A")
+    },
+    cpm() {
+        let cpm = 1
+        cpm *= 2 ** data["thread-coins-upg1"]
+        cpm *= 2 ** data["thread-candy-caupg2"]
+        cpm *= this.capacitors.pos()
+        if(data["general-red"])cpm *= 3
+        return cpm
+    },
+    coins: {
+        copm() {
+            let copm = 1
+            copm *= 5 ** data["thread-coins-upg3"]
+            copm *= 2 ** data["thread-candy-caupg1"]
+            copm *= calcThread.capacitors.neg()
+            return copm
+        }
+    },
+    candy: {
+        player: {
+            atk() {
+                let atk = 2 ** data["thread-candy-coupg1"]
+                atk *= calcThread.capacitors.neutral()
+                return atk
+            },
+            hp() {
+                let hp = 10 * 4 ** data["thread-candy-coupg2"]
+                hp *= calcThread.capacitors.neutral()
+                return hp
+            },
+            def() {
+                let def = 2 ** data["thread-candy-coupg3"]
+                return def
+            }
+        },
+        enemy: {
+            atk() {
+                return 4 ** data["thread-candy-defeated"]
+            },
+            hp() {
+                return 20 * 3 ** data["thread-candy-defeated"]
+            },
+            def() {
+                return 2 ** data["thread-candy-defeated"]
+            }
+        },
+        attacksToKill() {
+            let player = data["thread-candy-player-hp"] / Math.round(this.enemy.atk() / this.player.def())
+            if(this.player.def() > this.enemy.atk())player = Infinity
+            let enemy = data["thread-candy-enemy-hp"] / Math.round(this.player.atk() / this.enemy.def())
+            if(this.enemy.def() > this.player.atk())enemy = Infinity
+            if(!Number.isFinite(enemy))return Infinity
+            if(player <= enemy)return Infinity
+            return Math.ceil(enemy)
+        },
+        countsToKill() {
+            return this.attacksToKill() * 10
+        }
+    },
+    capacitors: {
+        pos() {
+            return 4 ** data["thread-capacitors-pos"]
+        },
+        neutral() {
+            return 3 ** data["thread-capacitors-neutral"]
+        },
+        neg() {
+            return 5 ** data["thread-capacitors-neg"]
+        }
     }
 }

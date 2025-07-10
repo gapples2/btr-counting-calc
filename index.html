@@ -10,8 +10,28 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
+        <div class="row">
+            <span class="title">general</span>
+        </div>
+        <div class="row space-below">
+            <label for="general-hide">hide?</label><input id="general-hide" type="checkbox">
+        </div>
+        <div id="general">
+            <div class="row">
+                <label for="general-sigfig"># of significant figures (for cpm):</label><input id="general-sigfig" placeholder="3">
+            </div>
+            <div class="row">
+                <label for="general-red">apply red role (for cpm calculations)</label><input id="general-red" type="checkbox">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <span class="title">least messages</span>
+        </div>
+        <div class="row space-below">
+            <label for="msg-hide">hide?</label><input id="msg-hide" type="checkbox">
+        </div>
         <div id="msg">
-            <h2 class="row">least messages</h2>
             <div class="row">
                 <label for="msg-least">least messages:</label><input id="msg-least" placeholder="800">
             </div>
@@ -26,35 +46,186 @@
                 <label for="msg-upg5">upg 5</label><input id="msg-upg5" type="checkbox">
                 <label for="msg-upg6">upg 6</label><input id="msg-upg6" type="checkbox">
                 <label for="msg-upg7">upg 7</label><input id="msg-upg7" type="checkbox">
+                <label for="msg-upg8">upg 8</label><input id="msg-upg8" type="checkbox">
+                <label for="msg-upg9">upg 9</label><input id="msg-upg9" type="checkbox">
             </div>
             <div class="row">
-                <label for="msg-red">red roles (<span id="msg-red-num">2</span>):</label><input id="msg-red" type="range" value="2" min="0" max="2" step="1">
-            </div>
-            <div class="row">
-                <label for="msg-sigfig"># of significant figures (for cpm):</label><input id="msg-sigfig" placeholder="3">
+                <label for="msg-red">red roles = <span id="msg-red-num">2</span> (separate from general option)</label><input id="msg-red" type="range" value="2" min="0" max="2" step="1">
             </div>
             <div class="row" style="width:100%">
                 <div class="overflow row" id="msg-chain" style="height:75px;justify-content:left;z-index: 1000"></div>
             </div>
         </div>
+        <br>
+        <div class="row">
+            <span class="title">least time</span>
+        </div>
+        <div class="row space-below">
+            <label for="time-hide">hide?</label><input id="time-hide" type="checkbox">
+        </div>
         <div id="time">
-            <h2 class="row">least time</h2>
             <div class="row">
                 <label for="time-least">least time:</label><input id="time-least" placeholder="800">
             </div>
             <div class="row">
                 <label for="time-factor">factor worth:</label><input id="time-factor" placeholder="0">
             </div>
+            <div class="row">
+                <label for="time-zen">time zen best:</label><input id="time-zen" placeholder="1000">
+            </div>
+            <br>
+            <div class="row">
+                <label for="time-cpm">cpm:</label><span id="time-cpm">1</span>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <span class="title">least members</span>
+        </div>
+        <div class="row space-below">
+            <label for="member-hide">hide?</label><input id="member-hide" type="checkbox">
+        </div>
+        <div id="member">
+            <div class="row">
+                <label for="member-least">least members:</label><input id="member-least" placeholder="32">
+            </div>
+            <div class="row">
+                <label for="member-completions">times completed:</label><input id="member-completions" placeholder="0">
+            </div>
+            <div class="row">
+                <label for="member-minmax">minmax? (assumes each member will maximize their count, changing roles and upgrades when necessary)</label><input id="member-minmax" type="checkbox">
+            </div>
+            <br>
+            <div class="row">
+                <label for="member-cpm">cpm:</label><span id="member-cpm">1</span>
+            </div>
+            <div class="row">
+                <label for="member-estimate"># of members required:</label><span id="member-estimate">1</span>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <span class="title">least threads</span>
+        </div>
+        <div class="row space-below">
+            <label for="thread-hide">hide?</label><input id="thread-hide" type="checkbox">
         </div>
         <div id="thread">
-            <h2 class="row">least threads</h2>
             <div class="row">
-                <label for="thread-ntl-convert">number</label><input id="thread-ntl-convert" placeholder="1">
+                <label for="thread-cpm">cpm:</label><span id="thread-cpm">1 (A)</span>
             </div>
-            <div id="thread-ntl-result" class="row">A</div>
+            <br>
+            <div class="row subtitle">
+                coins
+            </div>
+            <div id="thread-coins">
+                <div class="row">
+                    <label for="thread-coins-upg1">double least threads cpm:</label><input id="thread-coins-upg1" placeholder="0">
+                </div>
+                <div class="row">
+                    <label for="thread-coins-upg2">triple least time cpm:</label><input id="thread-coins-upg2" placeholder="0">
+                </div>
+                <div class="row">
+                    <label for="thread-coins-upg3">quadruple copm (<span id="thread-coins-upg3-amt">0</span>/5):</label><input id="thread-coins-upg3" type="range" min="0" max="5" value="0">
+                </div>
+                <div class="row">
+                    <label for="thread-coins-copm">copm:</label><span id="thread-coins-copm">1</span>
+                </div>
+            </div>
+            <br>
+            <div class="row subtitle">
+                candy
+            </div>
+            <div id="thread-candy">
+                <div class="row" style="margin-bottom:8px">
+                    <label for="thread-candy-defeated">enemies defeated:</label><input id="thread-candy-defeated" placeholder="0">
+                </div>
+                <div class="row">
+                    <label for="thread-candy-coupg1">double atk:</label><input id="thread-candy-coupg1" placeholder="0">
+                </div>
+                <div class="row">
+                    <label for="thread-candy-coupg2">quadruple max hp:</label><input id="thread-candy-coupg2" placeholder="0">
+                </div>
+                <div class="row" style="margin-bottom:8px">
+                    <label for="thread-candy-coupg3">double def:</label><input id="thread-candy-coupg3" placeholder="0">
+                </div>
+                <div class="row">
+                    <label for="thread-candy-caupg1">double copm:</label><input id="thread-candy-caupg1" placeholder="0">
+                </div>
+                <div class="row" style="margin-bottom:15px">
+                    <label for="thread-candy-caupg2">double least threads cpm (<span id="thread-candy-caupg2-amt">0</span>):</label><input id="thread-candy-caupg2" type="range" min="0" max="5" value="0">
+                </div>
+                <div class="row" style="margin-bottom:10px">
+                    <div class="column" style="align-items:end;margin-right:20px;width:49%">
+                        <div>
+                            player
+                        </div>
+                        <div class="row">
+                            <input id="thread-candy-player-hp" placeholder="10" style="width:100px"></input>
+                            /<span id="thread-candy-player-maxhp">10</span>&nbsp;HP
+                        </div>
+                        <div class="row">
+                            <span id="thread-candy-player-atk">1</span>&nbsp;atk
+                        </div>
+                        <div class="row">
+                            <span id="thread-candy-player-def">1</span>&nbsp;def
+                        </div>
+                    </div>
+                    <div class="column" style="align-items:baseline;margin-left:20px;width:49%">
+                        <div>
+                            enemy
+                        </div>
+                        <div class="row">
+                            <input id="thread-candy-enemy-hp" placeholder="20" style="width:100px"></input>
+                            /<span id="thread-candy-enemy-maxhp">20</span>&nbsp;HP
+                        </div>
+                        <div class="row">
+                            <span id="thread-candy-enemy-atk">1</span>&nbsp;atk
+                        </div>
+                        <div class="row">
+                            <span id="thread-candy-enemy-def">1</span>&nbsp;def
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <label>attacks to kill:</label><span id="thread-candy-attacks">Infinity</span>
+                </div>
+                <div class="row">
+                    <label>counts to kill:</label><span id="thread-candy-counts">Infinity</span>
+                </div>
+            </div>
+            <br>
+            <div class="row subtitle">
+                capacitors
+            </div>
+            <div id="thread-capacitors">
+                <div class="row">
+                    <div class="column" style="margin-right:5px;align-items:end;">
+                        <span for="thread-capacitors-pos">positive (<span id="thread-capacitors-pos-amt"></span>/4)</span>
+                        <span for="thread-capacitors-neutral">neutral (<span id="thread-capacitors-neutral-amt"></span>/4)</span>
+                        <span for="thread-capacitors-neg">negative (<span id="thread-capacitors-neg-amt"></span>/4)</span>
+                    </div>
+                    <div class="column">
+                        <input id="thread-capacitors-pos" type="range" min="0" max="4" value="0">
+                        <input id="thread-capacitors-neutral" type="range" min="0" max="4" value="0">
+                        <input id="thread-capacitors-neg" type="range" min="0" max="4" value="0">
+                    </div>
+                    <div class="column" style="margin-left:5px;align-items:baseline;width:170px">
+                        <span><span id="thread-capacitors-pos-boost">4</span>x least threads cpm</span>
+                        <span><span id="thread-capacitors-neutral-boost">3</span>x max hp and atk</span>
+                        <span><span id="thread-capacitors-neg-boost">5</span>x copm</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <span class="title">count helper</span>
+        </div>
+        <div class="row space-below">
+            <label for="count-help-hide">hide?</label><input id="count-help-hide" type="checkbox">
         </div>
         <div id="count-help">
-            <h2 class="row">count helper</h2>
             <div class="row">
                 <label for="count-help-current">current count:</label><input id="count-help-current" placeholder="0">
             </div>
