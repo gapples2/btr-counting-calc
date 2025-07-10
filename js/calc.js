@@ -157,7 +157,7 @@ const calcThread = {
     coins: {
         copm() {
             let copm = 1
-            copm *= 5 ** data["thread-coins-upg3"]
+            copm *= 4 ** data["thread-coins-upg3"]
             copm *= 2 ** data["thread-candy-caupg1"]
             copm *= calcThread.capacitors.neg()
             return copm
