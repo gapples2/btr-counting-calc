@@ -21,22 +21,22 @@ function loadData() {
     realData = JSON.parse(save)
 }
 
-function parseNumeric(input) {
-    let num = Number(input.value.replaceAll(",",""))
-    if(num >= 0 && !Number.isNaN(num) && !input.value.endsWith(".")) {
-        data[input.id] = num
+function parseNumeric(input, dataId=input.id, value=input.value, doUpdate=true) {
+    let num = Number(value.replaceAll(",",""))
+    if(num >= 0 && !Number.isNaN(num) && !value.endsWith(".")) {
+        data[dataId] = num
         input.style.borderColor = "white"
-        update()
+        if(doUpdate)update()
     }else{
         input.style.borderColor = "red"
     }
 }
 
-function parseLetter(input) {
-    if(/^[A-Z]+$/.test(input.value)) {
-        data[input.id] = calcThread.parseLetterNotation(input.value)
+function parseLetter(input, dataId=input.id, value=input.value, doUpdate=true) {
+    if(/^[A-Z]+$/.test(value)) {
+        data[dataId] = calcThread.parseLetterNotation(value)
         input.style.borderColor = "white"
-        update()
+        if(doUpdate)update()
     }else{
         input.style.borderColor = "red"
     }
@@ -63,7 +63,51 @@ const customInputs = {
         }
         if(data["count-help-isletter"])parseLetter(input)
         else parseNumeric(input)
+    }],
+    "thread-convert-number": ["input", 1, input => {
+        let tcl = document.getElementById("thread-convert-letter")
+        if(input.value.length == 0) {
+            delete realData[input.id]
+            tcl.value = ""
+            tcl.style.borderColor = "white"
+            input.style.borderColor = "white"
+            return;
+        }
+        parseNumeric(input, input.id, input.value, false)
+        if(input.style.borderColor != "red") {
+            tcl.value = calcThread.convertLetterNotation(data[input.id])
+            tcl.borderColor = "white"
+        }
+    }],
+    "thread-convert-letter": ["input", 0, input => {
+        let tcn = document.getElementById("thread-convert-number")
+        if(input.value.length == 0) {
+            delete realData["thread-convert-number"]
+            tcn.value = ""
+            tcn.style.borderColor = "white"
+            input.style.borderColor = "white"
+            return;
+        }
+        parseLetter(input, "thread-convert-number", input.value, false)
+        if(input.style.borderColor != "red") {
+            tcn.value = data["thread-convert-number"]
+            tcn.borderColor = "white"
+        }
     }]
+}
+
+const customData = {
+    "count-help-current": function(input, value) {
+        if(data["count-help-isletter"]) {
+            input.value = calcThread.convertLetterNotation(value)
+        }else{
+            input.value = value
+        }
+    },
+    "thread-convert-number": function(input, value) {
+        input.value = value
+        document.getElementById("thread-convert-letter").value = calcThread.convertLetterNotation(value)
+    }
 }
 
 function initializeInputs() {
@@ -111,8 +155,8 @@ function initializeInputs() {
         if(ele === null){
             delete realData[arr[0]]
         }else{
-            if(ele.id == "count-help-current" && data["count-help-isletter"]) {
-                ele.value = calcThread.convertLetterNotation(arr[1])
+            if(customData[arr[0]]) {
+                customData[arr[0]](ele, arr[1])
                 return;
             }
             if(ele.type == "checkbox") {

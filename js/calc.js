@@ -172,7 +172,6 @@ const calcThread = {
             },
             hp() {
                 let hp = 10 * 4 ** data["thread-candy-coupg2"]
-                hp *= calcThread.capacitors.neutral()
                 return hp
             },
             def() {

@@ -114,6 +114,15 @@
             <div class="row">
                 <label for="thread-cpm">cpm:</label><span id="thread-cpm">1 (A)</span>
             </div>
+            <div class="row">
+                <span>number &lt;-&gt; letter</span>
+            </div>
+            <div class="row">
+                <label for="thread-convert-number">number:</label><input id="thread-convert-number" placeholder="1">
+            </div>
+            <div class="row">
+                <label for="thread-convert-letter">letter:</label><input id="thread-convert-letter" placeholder="A">
+            </div>
             <br>
             <div class="row subtitle">
                 coins
@@ -165,7 +174,7 @@
                             /<span id="thread-candy-player-maxhp">10</span>&nbsp;HP
                         </div>
                         <div class="row">
-                            <span id="thread-candy-player-atk">1</span>&nbsp;atk
+                            <span id="thread-candy-player-atk">1</span>&nbsp;atk&nbsp;(<span id="thread-candy-player-trueatk">1</span>&nbsp;true&nbsp;atk)
                         </div>
                         <div class="row">
                             <span id="thread-candy-player-def">1</span>&nbsp;def
@@ -180,7 +189,7 @@
                             /<span id="thread-candy-enemy-maxhp">20</span>&nbsp;HP
                         </div>
                         <div class="row">
-                            <span id="thread-candy-enemy-atk">1</span>&nbsp;atk
+                            <span id="thread-candy-enemy-atk">1</span>&nbsp;atk&nbsp;(<span id="thread-candy-enemy-trueatk">1</span>&nbsp;true&nbsp;atk)
                         </div>
                         <div class="row">
                             <span id="thread-candy-enemy-def">1</span>&nbsp;def
@@ -212,7 +221,7 @@
                     </div>
                     <div class="column" style="margin-left:5px;align-items:baseline;width:170px">
                         <span><span id="thread-capacitors-pos-boost">4</span>x least threads cpm</span>
-                        <span><span id="thread-capacitors-neutral-boost">3</span>x max hp and atk</span>
+                        <span><span id="thread-capacitors-neutral-boost">3</span>x atk</span>
                         <span><span id="thread-capacitors-neg-boost">5</span>x copm</span>
                     </div>
                 </div>

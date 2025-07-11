@@ -8,6 +8,7 @@ let elementIds = [
         "thread-candy-caupg2-amt",
         "thread-candy-player-hp", "thread-candy-player-maxhp", "thread-candy-player-atk", "thread-candy-player-def",
         "thread-candy-enemy-hp", "thread-candy-enemy-maxhp", "thread-candy-enemy-atk", "thread-candy-enemy-def",
+        "thread-candy-player-trueatk", "thread-candy-enemy-trueatk",
         "thread-candy-attacks", "thread-candy-counts",
         "thread-capacitors-pos-amt", "thread-capacitors-neutral-amt", "thread-capacitors-neg-amt",
         "thread-capacitors-pos-boost", "thread-capacitors-neutral-boost", "thread-capacitors-neg-boost",
@@ -51,12 +52,14 @@ function update() {
     elements["thread-candy-player-hp"].placeholder = calcGeneral.formatWhole(playerHP)
     elements["thread-candy-player-maxhp"].textContent = calcGeneral.formatWhole(playerHP)
     elements["thread-candy-player-atk"].textContent = calcGeneral.formatWhole(calcThread.candy.player.atk())
+    elements["thread-candy-player-trueatk"].textContent = calcGeneral.formatWhole(Math.floor(calcThread.candy.player.atk() / calcThread.candy.enemy.def()))
     elements["thread-candy-player-def"].textContent = calcGeneral.formatWhole(calcThread.candy.player.def())
     let enemyHP = calcThread.candy.enemy.hp()
     placeholders["thread-candy-enemy-hp"] = enemyHP
     elements["thread-candy-enemy-hp"].placeholder = calcGeneral.formatWhole(enemyHP)
     elements["thread-candy-enemy-maxhp"].textContent = calcGeneral.formatWhole(enemyHP)
     elements["thread-candy-enemy-atk"].textContent = calcGeneral.formatWhole(calcThread.candy.enemy.atk())
+    elements["thread-candy-enemy-trueatk"].textContent = calcGeneral.formatWhole(Math.floor(calcThread.candy.enemy.atk() / calcThread.candy.player.def()))
     elements["thread-candy-enemy-def"].textContent = calcGeneral.formatWhole(calcThread.candy.enemy.def())
     elements["thread-candy-attacks"].textContent = calcGeneral.formatWhole(calcThread.candy.attacksToKill())
     elements["thread-candy-counts"].textContent = calcGeneral.formatWhole(calcThread.candy.countsToKill())
