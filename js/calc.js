@@ -4,7 +4,7 @@ function multGTZ(num, mult) {
 }
 
 const calcGeneral = {
-    expFormat(num, p=2) {
+    expFormat(num, p=data["general-sigfig"]-1) {
         if(!Number.isFinite(num))return "Infinity"
         if(num < 1000)return (Math.floor(num * 10 ** p) / 10 ** p).toFixed(0)
         let e = Math.floor(Math.log10(num))
@@ -19,6 +19,9 @@ const calcGeneral = {
         if(num < 1e9)return num.toLocaleString("en-US", {maximumFractionDigits: 0})
         return this.expFormat(num)
     },
+    expNumber(num, p=data["general-sigfig"]-1) {
+        return Number(this.expFormat(num, p))
+    }
 }
 
 const calcMsgs = {
@@ -88,6 +91,7 @@ const calcMember = {
     cpm() {
         let cpm = calcTime.memberBoost()
         if(data["msg-upg9"])cpm *= 10
+        cpm *= ([1, 3, 15, 200, 4000])[data["thread-completions"]]
         cpm = Math.round(cpm)
         if(data["general-red"])cpm *= 3
         return cpm
@@ -141,10 +145,15 @@ const calcThread = {
         return str.split("").reverse().map((char, index) => (char.charCodeAt() - 64) * 26 ** index).reduce((p, c) => p + c, 0)
     },
     convertLetterNotation(num) {
-        // todo: make this not garbage
-        if(num<=0)return ""
-        let len = num.toString(26).length - (/[01]+0/).test(num.toString(26))
-        return (num-(26**len-1)/25).toString(26).split("").map(char => char.charCodeAt()).map(num => num < 60 ? num + 17 : num - 22).map(num => String.fromCharCode(num)).join("").padStart(len,"A")
+        if(num < 1 || !Number.isFinite(num))return ""
+        let arr = []
+        do {
+            num -= 1
+            let mod = num % 26
+            num = Math.round((num - mod) / 26)
+            arr.push(mod + 65)
+        }while(num > 0)
+        return String.fromCodePoint(...arr.reverse())
     },
     cpm() {
         let cpm = 1

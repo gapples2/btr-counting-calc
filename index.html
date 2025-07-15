@@ -4,6 +4,7 @@
         <title>btr calc</title>
 
         <script src="js/calc.js"></script>
+        <script src="js/helper.js"></script>
         <script src="js/update.js" defer></script>
         <script src="js/input.js" defer></script>
 
@@ -29,14 +30,17 @@
             <span class="title">least messages</span>
         </div>
         <div class="row space-below">
-            <label for="msg-hide">hide?</label><input id="msg-hide" type="checkbox">
+            <label for="msg-hide">hide?</label>
+            <input id="msg-hide" type="checkbox">
         </div>
         <div id="msg">
             <div class="row">
-                <label for="msg-least">least messages:</label><input id="msg-least" placeholder="800">
+                <label for="msg-least">least messages:</label>
+                <input id="msg-least" placeholder="800">
             </div>
             <div class="row">
-                <label for="msg-completions">times completed:</label><input id="msg-completions" placeholder="0">
+                <label for="msg-completions">times completed:</label>
+                <input id="msg-completions" placeholder="0">
             </div>
             <div class="row">
                 <label for="msg-upg1">upg 1</label><input id="msg-upg1" type="checkbox">
@@ -50,10 +54,11 @@
                 <label for="msg-upg9">upg 9</label><input id="msg-upg9" type="checkbox">
             </div>
             <div class="row">
-                <label for="msg-red">red roles = <span id="msg-red-num">2</span> (separate from general option)</label><input id="msg-red" type="range" value="2" min="0" max="2" step="1">
+                <label for="msg-red">red roles = <span id="msg-red-amt">2</span> (separate from general option)</label>
+                <input id="msg-red" type="range" value="2" min="0" max="2" step="1">
             </div>
             <div class="row" style="width:100%">
-                <div class="overflow row" id="msg-chain" style="height:75px;justify-content:left;z-index: 1000"></div>
+                <div class="overflow row" id="msg-chain" style="height:75px;justify-content:left;"></div>
             </div>
         </div>
         <br>
@@ -61,21 +66,26 @@
             <span class="title">least time</span>
         </div>
         <div class="row space-below">
-            <label for="time-hide">hide?</label><input id="time-hide" type="checkbox">
+            <label for="time-hide">hide?</label>
+            <input id="time-hide" type="checkbox">
         </div>
         <div id="time">
             <div class="row">
-                <label for="time-least">least time:</label><input id="time-least" placeholder="800">
+                <label for="time-least">least time:</label>
+                <input id="time-least" placeholder="800">
             </div>
             <div class="row">
-                <label for="time-factor">factor worth:</label><input id="time-factor" placeholder="0">
+                <label for="time-factor">factor worth:</label>
+                <input id="time-factor" placeholder="0">
             </div>
             <div class="row">
-                <label for="time-zen">time zen best:</label><input id="time-zen" placeholder="1000">
+                <label for="time-zen">time zen best:</label>
+                <input id="time-zen" placeholder="1000">
             </div>
             <br>
             <div class="row">
-                <label for="time-cpm">cpm:</label><span id="time-cpm">1</span>
+                <label for="time-cpm">cpm:</label>
+                <span id="time-cpm">1</span>
             </div>
         </div>
         <br>
@@ -83,24 +93,30 @@
             <span class="title">least members</span>
         </div>
         <div class="row space-below">
-            <label for="member-hide">hide?</label><input id="member-hide" type="checkbox">
+            <label for="member-hide">hide?</label>
+            <input id="member-hide" type="checkbox">
         </div>
         <div id="member">
             <div class="row">
-                <label for="member-least">least members:</label><input id="member-least" placeholder="32">
+                <label for="member-least">least members:</label>
+                <input id="member-least" placeholder="32">
             </div>
             <div class="row">
-                <label for="member-completions">times completed:</label><input id="member-completions" placeholder="0">
+                <label for="member-completions">times completed:</label>
+                <input id="member-completions" placeholder="0">
             </div>
             <div class="row">
-                <label for="member-minmax">minmax? (assumes each member will maximize their count, changing roles and upgrades when necessary)</label><input id="member-minmax" type="checkbox">
+                <label for="member-minmax">minmax? (assumes each member will maximize their count, changing roles and upgrades when necessary)</label>
+                <input id="member-minmax" type="checkbox">
             </div>
             <br>
             <div class="row">
-                <label for="member-cpm">cpm:</label><span id="member-cpm">1</span>
+                <label for="member-cpm">cpm:</label>
+                <span id="member-cpm">1</span>
             </div>
             <div class="row">
-                <label for="member-estimate"># of members required:</label><span id="member-estimate">1</span>
+                <label for="member-estimate"># of members required:</label>
+                <span id="member-estimate">1</span>
             </div>
         </div>
         <br>
@@ -108,20 +124,29 @@
             <span class="title">least threads</span>
         </div>
         <div class="row space-below">
-            <label for="thread-hide">hide?</label><input id="thread-hide" type="checkbox">
+            <label for="thread-hide">hide?</label>
+            <input id="thread-hide" type="checkbox">
         </div>
         <div id="thread">
             <div class="row">
-                <label for="thread-cpm">cpm:</label><span id="thread-cpm">1 (A)</span>
+                <label for="thread-completions">least threads to goal (<span id="thread-completions-revamt">3</span>/3):</label>
+                <input id="thread-completions" type="range" min="0" max="3" value="0">
+            </div>
+            <br>
+            <div class="row">
+                <label for="thread-cpm">cpm:</label>
+                <span id="thread-cpm">1 (A)</span>
             </div>
             <div class="row">
                 <span>number &lt;-&gt; letter</span>
             </div>
             <div class="row">
-                <label for="thread-convert-number">number:</label><input id="thread-convert-number" placeholder="1">
+                <label for="thread-convert-number">number:</label>
+                <input id="thread-convert-number" placeholder="1" data-noUpdate="true">
             </div>
             <div class="row">
-                <label for="thread-convert-letter">letter:</label><input id="thread-convert-letter" placeholder="A">
+                <label for="thread-convert-letter">letter:</label>
+                <input id="thread-convert-letter" placeholder="A" data-noUpdate="true">
             </div>
             <br>
             <div class="row subtitle">
@@ -129,16 +154,20 @@
             </div>
             <div id="thread-coins">
                 <div class="row">
-                    <label for="thread-coins-upg1">double least threads cpm:</label><input id="thread-coins-upg1" placeholder="0">
+                    <label for="thread-coins-upg1">double least threads cpm:</label>
+                    <input id="thread-coins-upg1" placeholder="0">
                 </div>
                 <div class="row">
-                    <label for="thread-coins-upg2">triple least time cpm:</label><input id="thread-coins-upg2" placeholder="0">
+                    <label for="thread-coins-upg2">triple least time cpm:</label>
+                    <input id="thread-coins-upg2" placeholder="0">
                 </div>
                 <div class="row">
-                    <label for="thread-coins-upg3">quadruple copm (<span id="thread-coins-upg3-amt">0</span>/5):</label><input id="thread-coins-upg3" type="range" min="0" max="5" value="0">
+                    <label for="thread-coins-upg3">quadruple copm (<span id="thread-coins-upg3-amt">0</span>/5):</label>
+                    <input id="thread-coins-upg3" type="range" min="0" max="5" value="0">
                 </div>
                 <div class="row">
-                    <label for="thread-coins-copm">copm:</label><span id="thread-coins-copm">1</span>
+                    <label for="thread-coins-copm">copm:</label>
+                    <span id="thread-coins-copm">1</span>
                 </div>
             </div>
             <br>
@@ -147,22 +176,28 @@
             </div>
             <div id="thread-candy">
                 <div class="row" style="margin-bottom:8px">
-                    <label for="thread-candy-defeated">enemies defeated:</label><input id="thread-candy-defeated" placeholder="0">
+                    <label for="thread-candy-defeated">enemies defeated:</label>
+                    <input id="thread-candy-defeated" placeholder="0">
                 </div>
                 <div class="row">
-                    <label for="thread-candy-coupg1">double atk:</label><input id="thread-candy-coupg1" placeholder="0">
+                    <label for="thread-candy-coupg1">double atk:</label>
+                    <input id="thread-candy-coupg1" placeholder="0">
                 </div>
                 <div class="row">
-                    <label for="thread-candy-coupg2">quadruple max hp:</label><input id="thread-candy-coupg2" placeholder="0">
+                    <label for="thread-candy-coupg2">quadruple max hp:</label>
+                    <input id="thread-candy-coupg2" placeholder="0">
                 </div>
                 <div class="row" style="margin-bottom:8px">
-                    <label for="thread-candy-coupg3">double def:</label><input id="thread-candy-coupg3" placeholder="0">
+                    <label for="thread-candy-coupg3">double def:</label>
+                    <input id="thread-candy-coupg3" placeholder="0">
                 </div>
                 <div class="row">
-                    <label for="thread-candy-caupg1">double copm:</label><input id="thread-candy-caupg1" placeholder="0">
+                    <label for="thread-candy-caupg1">double copm:</label>
+                    <input id="thread-candy-caupg1" placeholder="0">
                 </div>
                 <div class="row" style="margin-bottom:15px">
-                    <label for="thread-candy-caupg2">double least threads cpm (<span id="thread-candy-caupg2-amt">0</span>):</label><input id="thread-candy-caupg2" type="range" min="0" max="5" value="0">
+                    <label for="thread-candy-caupg2">double least threads cpm (<span id="thread-candy-caupg2-amt">0</span>):</label>
+                    <input id="thread-candy-caupg2" type="range" min="0" max="5" value="0">
                 </div>
                 <div class="row" style="margin-bottom:10px">
                     <div class="column" style="align-items:end;margin-right:20px;width:49%">
@@ -197,10 +232,12 @@
                     </div>
                 </div>
                 <div class="row">
-                    <label>attacks to kill:</label><span id="thread-candy-attacks">Infinity</span>
+                    <label>attacks to kill:</label>
+                    <span id="thread-candy-attacks">Infinity</span>
                 </div>
                 <div class="row">
-                    <label>counts to kill:</label><span id="thread-candy-counts">Infinity</span>
+                    <label>counts to kill:</label>
+                    <span id="thread-candy-counts">Infinity</span>
                 </div>
             </div>
             <br>
@@ -232,23 +269,81 @@
             <span class="title">count helper</span>
         </div>
         <div class="row space-below">
-            <label for="count-help-hide">hide?</label><input id="count-help-hide" type="checkbox">
+            <label for="count-help-hide">hide?</label>
+            <input id="count-help-hide" type="checkbox">
         </div>
         <div id="count-help">
             <div class="row">
-                <label for="count-help-current">current count:</label><input id="count-help-current" placeholder="0">
+                <label for="count-help-current">current count:</label>
+                <input id="count-help-current" placeholder="0" data-noUpdate="true">
             </div>
             <div class="row">
-                <label for="count-help-isletter">letter notation?</label><input id="count-help-isletter" type="checkbox">
+                <label for="count-help-isletter">letter notation?</label>
+                <input id="count-help-isletter" type="checkbox" data-noUpdate="true">
             </div>
             <div class="row">
-                <label for="count-help-firstcounter">first counter? (will increase count exactly by cpm instead of 2x one time)</label><input id="count-help-firstcounter" type="checkbox">
+                <label for="count-help-addmsgnum">append message number?</label>
+                <input id="count-help-addmsgnum" type="checkbox" data-noUpdate="true">
+                <label for="count-help-msgnum">current message number:</label>
+                <input id="count-help-msgnum" placeholder="0" data-noUpdate="true">
+            </div>
+            <br>
+            <div class="row">
+                <label for="count-help-diff">advanced?</label>
+                <input id="count-help-diff" type="checkbox" data-noUpdate="true">
+            </div>
+            <br>
+            <div id="count-help-basic">
+                <div class="row">
+                    <label for="count-help-basic-cpm">cpm:</label>
+                    <input id="count-help-basic-cpm" placeholder="1" data-noUpdate="true">
+                </div>
+                <div class="row">
+                    <label for="count-help-basic-counters"># of counters (<span id="count-help-basic-counters-amt">2</span>):</label>
+                    <input id="count-help-basic-counters" type="range" min="1" max="9" value="2" data-noUpdate="true">
+                </div>
+                <div class="row">
+                    <label for="count-help-basic-position">your position in the cycle (<span id="count-help-basic-position-place">1st</span>):</label>
+                    <input id="count-help-basic-position" type="range" min="1" max="2" value="1" data-noUpdate="true">
+                </div>
+                <div class="row">
+                    <label for="count-help-basic-counts"># of counts per counter (<span id="count-help-basic-counts-amt">2</span>):</label>
+                    <input id="count-help-basic-counts" type="range" min="1" max="9" value="1" data-noUpdate="true">
+                </div>
+            </div>
+            <div id="count-help-adv">
+                <div class="row">
+                    <label for="count-help-adv-counts"># of counts in cycle (1 to 99)</label>
+                    <input id="count-help-adv-counts" placeholder="2" data-noUpdate="true" data-min="1" data-max="99">
+                </div>
+                <div class="row" style="width:100%">
+                    <div class="overflow row" id="count-help-adv-cycle" style="height:100px;justify-content:left;"></div>
+                </div>
+                <div class="row">
+                    <span>explanation</span>
+                </div>
+                <div class="row">
+                    <span><span style="font-weight:bold;">same as</span> makes the count act identical to another count (qol thing)</span>
+                </div>
+                <div class="row">
+                    <span>it must be at least 1 and less than the current count number (and therefore the 1st count cannot use this)</span>
+                </div>
+                <div class="row">
+                    <span>these can be chained (count 3 -&gt; count 2 -&gt; count 1 is okay)</span>
+                </div>
+                <div class="row">
+                    <span><span style="font-weight:bold;">your count</span> copies marked counts to clipboard</span>
+                </div>
+                <div class="row">
+                    <span><span style="font-weight:bold;">cpm</span> self-explanatory</span>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <button id="count-help-init">initialize (click this once before counting)</button>
             </div>
             <div class="row">
-                <label for="count-help-cpm">cpm:</label><input id="count-help-cpm" placeholder="1">
-            </div>
-            <div class="row">
-                <button id="count-help-button" style="width:300px;height:70px;font-size:23px;">count (copy + paste)</button>
+                <button id="count-help-button">count (copy + paste)</button>
             </div>
         </div>
     </body>

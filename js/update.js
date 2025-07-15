@@ -1,31 +1,31 @@
 let elementIds = [
-    "msg-red-num",
     "msg-chain",
     "time-cpm",
     "member-cpm", "member-estimate",
     "thread-cpm",
-        "thread-coins-copm", "thread-coins-upg3-amt",
-        "thread-candy-caupg2-amt",
+        "thread-convert-number", "thread-convert-letter", "thread-completions-revamt",
+        "thread-coins-copm",
         "thread-candy-player-hp", "thread-candy-player-maxhp", "thread-candy-player-atk", "thread-candy-player-def",
         "thread-candy-enemy-hp", "thread-candy-enemy-maxhp", "thread-candy-enemy-atk", "thread-candy-enemy-def",
         "thread-candy-player-trueatk", "thread-candy-enemy-trueatk",
         "thread-candy-attacks", "thread-candy-counts",
-        "thread-capacitors-pos-amt", "thread-capacitors-neutral-amt", "thread-capacitors-neg-amt",
         "thread-capacitors-pos-boost", "thread-capacitors-neutral-boost", "thread-capacitors-neg-boost",
+    "count-help-current", "count-help-basic-position", "count-help-basic-counters-amt", "count-help-basic-position-place",
+    "count-help-msgnum", "count-help-basic", "count-help-adv", "count-help-adv-cycle",
     "general", "msg", "time", "member", "thread", "count-help"
 ]
 let elements = {}
 
 function initUpdate() {
     elementIds.forEach(str => elements[str] = document.getElementById(str))
-    update()
+    //update()
 }
 
 function update() {
     // general
 
     // msg
-    elements["msg-red-num"].textContent = data["msg-red"].toFixed(0)
+    //elements["msg-red-num"].textContent = data["msg-red"].toFixed(0)
     let chain = calcMsgs.msgChain()
     if(chain.length == 0) {
         elements["msg-chain"].innerHTML = "<span>None.</span><br>"
@@ -44,9 +44,9 @@ function update() {
     elements["thread-cpm"].textContent = `${calcGeneral.expFormat(calcThread.cpm(), data["general-sigfig"] - 1)} (${calcThread.convertLetterNotation(calcThread.cpm())})`
     // coins
     elements["thread-coins-copm"].textContent = calcGeneral.expFormat(calcThread.coins.copm(), data["general-sigfig"] - 1)
-    elements["thread-coins-upg3-amt"].textContent = data["thread-coins-upg3"].toFixed(0)
+    //elements["thread-coins-upg3-amt"].textContent = data["thread-coins-upg3"].toFixed(0)
     // candy
-    elements["thread-candy-caupg2-amt"].textContent = data["thread-candy-caupg2"].toFixed(0)
+    //elements["thread-candy-caupg2-amt"].textContent = data["thread-candy-caupg2"].toFixed(0)
     let playerHP = calcThread.candy.player.hp()
     placeholders["thread-candy-player-hp"] = playerHP
     elements["thread-candy-player-hp"].placeholder = calcGeneral.formatWhole(playerHP)
@@ -64,9 +64,9 @@ function update() {
     elements["thread-candy-attacks"].textContent = calcGeneral.formatWhole(calcThread.candy.attacksToKill())
     elements["thread-candy-counts"].textContent = calcGeneral.formatWhole(calcThread.candy.countsToKill())
     // capacitors
-    elements["thread-capacitors-pos-amt"].textContent = data["thread-capacitors-pos"].toFixed(0)
-    elements["thread-capacitors-neutral-amt"].textContent = data["thread-capacitors-neutral"].toFixed(0)
-    elements["thread-capacitors-neg-amt"].textContent = data["thread-capacitors-neg"].toFixed(0)
+    //elements["thread-capacitors-pos-amt"].textContent = data["thread-capacitors-pos"].toFixed(0)
+    //elements["thread-capacitors-neutral-amt"].textContent = data["thread-capacitors-neutral"].toFixed(0)
+    //elements["thread-capacitors-neg-amt"].textContent = data["thread-capacitors-neg"].toFixed(0)
     elements["thread-capacitors-pos-boost"].textContent = calcThread.capacitors.pos().toLocaleString("en-US")
     elements["thread-capacitors-neutral-boost"].textContent = calcThread.capacitors.neutral().toLocaleString("en-US")
     elements["thread-capacitors-neg-boost"].textContent = calcThread.capacitors.neg().toLocaleString("en-US")

@@ -21,9 +21,13 @@ function loadData() {
     realData = JSON.parse(save)
 }
 
-function parseNumeric(input, dataId=input.id, value=input.value, doUpdate=true) {
+function parseNumeric(input, doUpdate=true, options={}) {
+    let dataId = options.id ?? input.id
+    let value = options.value ?? input.value
+    let min = options.min ?? 0
+    let max = options.max ?? Infinity
     let num = Number(value.replaceAll(",",""))
-    if(num >= 0 && !Number.isNaN(num) && !value.endsWith(".")) {
+    if(num >= min && num <= max && !Number.isNaN(num) && !value.endsWith(".")) {
         data[dataId] = num
         input.style.borderColor = "white"
         if(doUpdate)update()
@@ -32,7 +36,7 @@ function parseNumeric(input, dataId=input.id, value=input.value, doUpdate=true) 
     }
 }
 
-function parseLetter(input, dataId=input.id, value=input.value, doUpdate=true) {
+function parseLetter(input, doUpdate=true, dataId=input.id, value=input.value) {
     if(/^[A-Z]+$/.test(value)) {
         data[dataId] = calcThread.parseLetterNotation(value)
         input.style.borderColor = "white"
@@ -44,7 +48,7 @@ function parseLetter(input, dataId=input.id, value=input.value, doUpdate=true) {
 
 const customInputs = {
     "count-help-isletter": ["change", false, (input) => {
-        let chc = document.getElementById("count-help-current")
+        let chc = elements["count-help-current"]
         data[input.id] = input.checked
         if(input.checked) {
             chc.value = calcThread.convertLetterNotation(data["count-help-current"])
@@ -61,11 +65,26 @@ const customInputs = {
             update()
             return;
         }
-        if(data["count-help-isletter"])parseLetter(input)
-        else parseNumeric(input)
+        if(data["count-help-isletter"])parseLetter(input, false)
+        else parseNumeric(input, false)
+    }],
+    "count-help-button": ["click", undefined, () => {
+        if(data["count-help-diff"]){
+            let out = advCount()
+            if(out !== undefined)navigator.clipboard.writeText(out)
+        }else{
+            navigator.clipboard.writeText(basicCount())
+        }
+    }],
+    "count-help-init": ["click", undefined, () => {
+        if(data["count-help-diff"]){
+            initAdvCount()
+        }else{
+            basicCount(data["count-help-basic-position"], 0)
+        }
     }],
     "thread-convert-number": ["input", 1, input => {
-        let tcl = document.getElementById("thread-convert-letter")
+        let tcl = elements["thread-convert-letter"]
         if(input.value.length == 0) {
             delete realData[input.id]
             tcl.value = ""
@@ -73,14 +92,14 @@ const customInputs = {
             input.style.borderColor = "white"
             return;
         }
-        parseNumeric(input, input.id, input.value, false)
+        parseNumeric(input, false)
         if(input.style.borderColor != "red") {
             tcl.value = calcThread.convertLetterNotation(data[input.id])
-            tcl.borderColor = "white"
+            tcl.style.borderColor = "white"
         }
     }],
     "thread-convert-letter": ["input", 0, input => {
-        let tcn = document.getElementById("thread-convert-number")
+        let tcn = elements["thread-convert-number"]
         if(input.value.length == 0) {
             delete realData["thread-convert-number"]
             tcn.value = ""
@@ -88,11 +107,35 @@ const customInputs = {
             input.style.borderColor = "white"
             return;
         }
-        parseLetter(input, "thread-convert-number", input.value, false)
+        parseLetter(input, false, {id: "thread-convert-number"})
         if(input.style.borderColor != "red") {
             tcn.value = data["thread-convert-number"]
-            tcn.borderColor = "white"
+            tcn.style.borderColor = "white"
         }
+    }],
+    "count-help-basic-counters": ["input", 2, input => {
+        data[input.id] = input.valueAsNumber
+        elements["count-help-basic-counters-amt"].textContent = input.value
+        elements["count-help-basic-position"].max = input.value
+        data["count-help-basic-position"] = Math.min(data["count-help-basic-position"], input.valueAsNumber)
+        elements["count-help-basic-position"].value = data["count-help-basic-position"]
+        elements["count-help-basic-position-place"].textContent = toPlace(data["count-help-basic-position"])
+    }],
+    "count-help-diff": ["change", false, input => {
+        data[input.id] = input.checked
+        elements["count-help-basic"].style.display = input.checked ? "none" : ""
+        elements["count-help-adv"].style.display = input.checked ? "" : "none"
+    }],
+    "count-help-adv-counts": ["change", 2, input => {
+        parseNumeric(input, false, {min: 2, max: 99})
+        if(input.style.borderColor == "white") {
+            adjustAdvContainer()
+        }
+    }],
+    "thread-completions": ["input", 0, input => {
+        data[input.id] = input.valueAsNumber
+        elements["thread-completions-revamt"].textContent = 3 - data[input.id]
+        update()
     }]
 }
 
@@ -106,18 +149,23 @@ const customData = {
     },
     "thread-convert-number": function(input, value) {
         input.value = value
-        document.getElementById("thread-convert-letter").value = calcThread.convertLetterNotation(value)
-    }
+        elements["thread-convert-letter"].value = calcThread.convertLetterNotation(value)
+    },
+    "count-help-adv-cycle": () => {},
+    "count-help-adv-current": () => {}
 }
 
 function initializeInputs() {
+    Object.entries(customInputs).forEach(input => {
+        let inputEle = document.getElementById(input[0])
+        let ci = input[1]
+        if(ci[1] !== undefined)placeholders[input[0]] = ci[1]
+        inputEle.addEventListener(ci[0], () => ci[2](inputEle))
+    })
     let inputs = document.getElementsByTagName("input")
     for(let x = 0; x < inputs.length; x++) {
         let input = inputs[x]
         if(customInputs[input.id]) {
-            let ci = customInputs[input.id]
-            placeholders[input.id] = ci[1]
-            input.addEventListener(ci[0], () => ci[2](input))
             continue;
         }
         switch(input.type){
@@ -125,14 +173,41 @@ function initializeInputs() {
             placeholders[input.id] = input.checked ?? false
             input.addEventListener("change", () => {
                 data[input.id] = input.checked
-                update()
+                if(!input.dataset.noUpdate)update()
             })
             break;
         case "range":
             placeholders[input.id] = Number(input.value)
+            let amt = document.getElementById(input.id+"-amt")
+            let place = document.getElementById(input.id+"-place")
+            if(amt){
+                amt.textContent = data[input.id]
+                input.addEventListener("input", () => {
+                    data[input.id] = input.valueAsNumber
+                    amt.textContent = input.value
+                    if(!input.dataset.noUpdate)update()
+                })
+                break;
+            }
+            if(place){
+                place.textContent = data[input.id].toFixed(0) + (["st","nd","rd","th"])[Math.min(data[input.id]-1,3)]
+                input.addEventListener("input", () => {
+                    data[input.id] = input.valueAsNumber
+                    place.textContent = input.value + (["st","nd","rd","th"])[Math.min(input.valueAsNumber-1,3)]
+                    if(!input.dataset.noUpdate)update()
+                })
+                break;
+            }
             input.addEventListener("input", () => {
                 data[input.id] = input.valueAsNumber
-                update()
+                if(!input.dataset.noUpdate)update()
+            })
+            break;
+        case "number":
+            placeholders[input.id] = Number(input.value)
+            input.addEventListener("input", () => {
+                data[input.id] = input.valueAsNumber
+                if(!input.dataset.noUpdate)update()
             })
             break;
         default:
@@ -141,10 +216,14 @@ function initializeInputs() {
                 if(input.value.length == 0) {
                     delete realData[input.id]
                     input.style.borderColor = "white"
-                    update()
+                    if(!input.dataset.noUpdate)update()
                     return;
                 }
-                parseNumeric(input)
+                parseNumeric(
+                    input,
+                    !input.dataset.noUpdate,
+                    {min: Number(input.dataset.min ?? 0), max: Number(input.dataset.max ?? Infinity)}
+                )
             })
             break;
         }
@@ -167,25 +246,14 @@ function initializeInputs() {
         }
     })
 
-    document.getElementById("count-help-button").addEventListener("click", () => {
-        let mult = data["count-help-firstcounter"] ? 1 : 2
-        data["count-help-firstcounter"] = false
-        document.getElementById("count-help-firstcounter").checked = false
-        if(data["count-help-isletter"]) {
-            let count = data["count-help-current"] + data["count-help-cpm"] * mult
-            let asLetter = calcThread.convertLetterNotation(count)
-            document.getElementById("count-help-current").value = asLetter
-            data["count-help-current"] = count
-            navigator.clipboard.writeText(asLetter)
-        }else{
-            let count = calcGeneral.expFormat(data["count-help-current"] + data["count-help-cpm"] * mult, 4)
-            document.getElementById("count-help-current").value = count
-            data["count-help-current"] = Number(count)
-            navigator.clipboard.writeText(count)
-        }
-    })
-
-    document.getElementById("count-help-current").placeholder = data["count-help-isletter"] ? "<empty>" : "0"
+    elements["count-help-current"].placeholder = data["count-help-isletter"] ? "<empty>" : "0"
+    elements["count-help-basic-position"].max = data["count-help-basic-counters"]
+    elements["count-help-basic-position"].value = data["count-help-basic-position"]
+    elements["count-help-basic-counters-amt"].textContent = data["count-help-basic-counters"]
+    elements["count-help-basic"].style.display = data["count-help-diff"] ? "none" : ""
+    elements["count-help-adv"].style.display = data["count-help-diff"] ? "" : "none"
+    elements["thread-completions-revamt"].textContent = 3 - data["thread-completions"]
+    initializeAdvContainer()
 }
 
 function init() {
@@ -194,8 +262,9 @@ function init() {
     }
 
     loadData()
-    initializeInputs()
     initUpdate()
+    initializeInputs()
+    update()
 }
 
 init()
