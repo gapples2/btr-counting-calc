@@ -76,7 +76,7 @@ const calcTime = {
     },
     cpm() {
         let cpm = calcMember.timeBoost()
-        if(data["msg-upg4"])cpm = Math.round(calcMsgs.upgBoost())
+        if(data["msg-upg4"])cpm *= Math.round(calcMsgs.upgBoost() ** 0.75)
         if(data["msg-upg5"])cpm *= 3
         cpm *= 3 ** data["thread-coins-upg2"]
         if(data["general-red"])cpm *= 3
