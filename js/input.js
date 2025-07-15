@@ -36,7 +36,9 @@ function parseNumeric(input, doUpdate=true, options={}) {
     }
 }
 
-function parseLetter(input, doUpdate=true, dataId=input.id, value=input.value) {
+function parseLetter(input, doUpdate=true, options={}) {
+    let dataId = options.id ?? input.id
+    let value = options.value ?? input.value
     if(/^[A-Z]+$/.test(value)) {
         data[dataId] = calcThread.parseLetterNotation(value)
         input.style.borderColor = "white"
