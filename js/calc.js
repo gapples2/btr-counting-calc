@@ -203,7 +203,7 @@ const calcThread = {
     },
     cpm() {
         let cpm = this.baseCpm()
-        if(data["general-red"])cpm *= calcMember.redPower()
+        if(calcMember.isRed())cpm *= calcMember.redPower()
         return cpm
     },
     coins: {
