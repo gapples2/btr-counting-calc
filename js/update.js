@@ -1,6 +1,7 @@
 let elementIds = [
+    "general-role-none", "general-role-red", "general-role-blue", "general-role-green", "general-counts",
     "msg-chain",
-    "time-cpm",
+    "time-cpm", "time-factor",
     "member-cpm", "member-estimate",
     "thread-cpm",
         "thread-convert-number", "thread-convert-letter", "thread-completions-revamt",
@@ -8,11 +9,12 @@ let elementIds = [
         "thread-candy-player-hp", "thread-candy-player-maxhp", "thread-candy-player-atk", "thread-candy-player-def",
         "thread-candy-enemy-hp", "thread-candy-enemy-maxhp", "thread-candy-enemy-atk", "thread-candy-enemy-def",
         "thread-candy-player-trueatk", "thread-candy-enemy-trueatk",
-        "thread-candy-attacks", "thread-candy-counts",
+        "thread-candy-attacks", "thread-candy-counts", "thread-candy-total",
         "thread-capacitors-pos-boost", "thread-capacitors-neutral-boost", "thread-capacitors-neg-boost",
+    "upg-grid", "upg-cpm",
     "count-help-current", "count-help-basic-position", "count-help-basic-counters-amt", "count-help-basic-position-place",
     "count-help-msgnum", "count-help-basic", "count-help-adv", "count-help-adv-cycle",
-    "general", "msg", "time", "member", "thread", "count-help"
+    "general", "msg", "time", "member", "thread", "upg", "count-help"
 ]
 let elements = {}
 
@@ -23,6 +25,7 @@ function initUpdate() {
 
 function update() {
     // general
+    elements["general-counts"].textContent = calcGeneral.maxCounts().toFixed(0)
 
     // msg
     //elements["msg-red-num"].textContent = data["msg-red"].toFixed(0)
@@ -35,10 +38,11 @@ function update() {
 
     // time
     elements["time-cpm"].textContent = calcGeneral.expFormat(calcTime.cpm(), data["general-sigfig"] - 1)
+    elements["time-factor"].textContent = calcTime.factor().toFixed(2).replace(/\.?0+$/,"")
 
     // member
     elements["member-cpm"].textContent = calcGeneral.expFormat(calcMember.cpm(), data["general-sigfig"] - 1)
-    elements["member-estimate"].textContent = calcGeneral.expFormat(calcMember.estimatedMembers(), data["general-sigfig"] - 1)
+    elements["member-estimate"].textContent = calcGeneral.expFormat(calcMember.estimatedMembers(), 10)
 
     // thread
     elements["thread-cpm"].textContent = `${calcGeneral.expFormat(calcThread.cpm(), data["general-sigfig"] - 1)} (${calcThread.convertLetterNotation(calcThread.cpm())})`
@@ -63,6 +67,7 @@ function update() {
     elements["thread-candy-enemy-def"].textContent = calcGeneral.formatWhole(calcThread.candy.enemy.def())
     elements["thread-candy-attacks"].textContent = calcGeneral.formatWhole(calcThread.candy.attacksToKill())
     elements["thread-candy-counts"].textContent = calcGeneral.formatWhole(calcThread.candy.countsToKill())
+    elements["thread-candy-total"].textContent = calcGeneral.expFormat(calcThread.candy.total())
     // capacitors
     //elements["thread-capacitors-pos-amt"].textContent = data["thread-capacitors-pos"].toFixed(0)
     //elements["thread-capacitors-neutral-amt"].textContent = data["thread-capacitors-neutral"].toFixed(0)
@@ -71,11 +76,15 @@ function update() {
     elements["thread-capacitors-neutral-boost"].textContent = calcThread.capacitors.neutral().toLocaleString("en-US")
     elements["thread-capacitors-neg-boost"].textContent = calcThread.capacitors.neg().toLocaleString("en-US")
 
+    // upg
+    elements["upg-cpm"].textContent = calcGeneral.expFormat(calcUpg.cpm())
+
     // tabs
     elements["general"].style.display = data["general-hide"] ? "none" : ""
     elements["msg"].style.display = data["msg-hide"] ? "none" : ""
     elements["time"].style.display = data["time-hide"] ? "none" : ""
     elements["member"].style.display = data["member-hide"] ? "none" : ""
     elements["thread"].style.display = data["thread-hide"] ? "none" : ""
+    elements["upg"].style.display = data["upg-hide"] ? "none" : ""
     elements["count-help"].style.display = data["count-help-hide"] ? "none" : ""
 }

@@ -21,25 +21,43 @@ const calcGeneral = {
     },
     expNumber(num, p=data["general-sigfig"]-1) {
         return Number(this.expFormat(num, p))
+    },
+    getRadioValue(name) {
+        return document.querySelector(`input[name="${name}"]:checked`).value
+    },
+    maxCounts() {
+        let counts = 1
+        if(data['msg-upg8'])counts++
+        if(calcMember.isGreen())counts++
+        if(data["upg-has21"])counts += 2
+        return counts
     }
 }
 
 const calcMsgs = {
+    upgAmt() {
+        return Object.entries(realData).filter(arr => arr[0].startsWith("msg-upg") && arr[1] === true).length
+    },
     upgBoost() {
         let mult = 1
         if(data["msg-upg1"])mult *= 2
-        if(data["msg-upg2"])mult *= Object.entries(realData).filter(arr => arr[0].startsWith("msg-upg") && arr[1] === true).length + 1
+        if(data["msg-upg2"])mult *= this.upgAmt() + 1
         if(data["msg-upg3"])mult *= 3
         if(data["msg-upg6"])mult /= 2
         if(data["msg-upg7"])mult *= 50
         return mult
     },
-    cpm() {
+    baseCpm() {
         let base = Math.sqrt(800) ** (data["msg-completions"] + 1) / Math.sqrt(data["msg-least"])
         base *= this.upgBoost()
         base *= calcTime.msgBoost()
         if(data["msg-upg6"])base **= 1.1
         return Math.round(base)
+    },
+    cpm() {
+        let cpm = this.baseCpm()
+        if(calcMember.isRed())cpm *= calcMember.redPower()
+        return cpm
     },
     goal() {
         return 200 * 1000 ** data["msg-completions"]
@@ -57,9 +75,8 @@ const calcMsgs = {
     },
     msgChainRecursion(arr) {
         let cpm = calcGeneral.expFormat(this.cpm(), data["general-sigfig"] - 1)
-        let msgs = this.expectedMsgs(Number(cpm) * (data["msg-red"] + 1))
+        let msgs = this.expectedMsgs(Number(cpm))
         if(!Number.isFinite(Number(cpm)) || !Number.isFinite(msgs))return;
-        if(data["msg-red"] == 1 && (msgs % 2) == 0 && Number(cpm) * (msgs - 2) * 2 + Number(cpm) * 3 >= this.goal())msgs--
         if(arr.length > 0 && arr.at(-1)[1] <= msgs)return;
         arr.push([cpm, msgs])
         data["msg-least"] = msgs
@@ -68,19 +85,36 @@ const calcMsgs = {
 }
 
 const calcTime = {
+    factor() {
+        return data["time-c3"] + data["time-c2"] / 2 + data["time-c1"] / 4
+    },
+    challengeSum() {
+        return data["time-c1"] + data["time-c2"] + data["time-c3"]
+    },
     msgBoost() {
-        return Math.sqrt(800 / data["time-least"]) * Math.sqrt(1600) ** data["time-factor"]
+        return Math.sqrt(800 / data["time-least"]) * Math.sqrt(1600) ** this.factor()
     },
     memberBoost() {
-        return Math.sqrt(data["time-zen"] / 1000)
+        let mult = Math.sqrt(data["time-zen"] / 1000)
+        if(data["upg-has12"])mult **= 1.5
+        return mult
     },
-    cpm() {
+    baseCpm() {
         let cpm = calcMember.timeBoost()
         if(data["msg-upg4"])cpm *= Math.round(calcMsgs.upgBoost() ** 0.75)
         if(data["msg-upg5"])cpm *= 3
         cpm *= 3 ** data["thread-coins-upg2"]
-        if(data["general-red"])cpm *= 3
+        if(data["upg-has23"])cpm *= 3
         return cpm
+    },
+    roleBoost() {
+        let mult = 1
+        if(calcMember.isRed())mult *= calcMember.redPower()
+        if(data["upg-has41"] && calcMember.isBlue())mult *= 5
+        return mult
+    },
+    cpm() {
+        return this.baseCpm() * this.roleBoost()
     }
 }
 
@@ -88,55 +122,60 @@ const calcMember = {
     timeBoost() {
         return Math.round(Math.sqrt(32) ** (data["member-completions"] + 1) / Math.sqrt(data["member-least"]))
     },
-    cpm() {
+    baseCpm(upg9=data["msg-upg9"]) {
         let cpm = calcTime.memberBoost()
-        if(data["msg-upg9"])cpm *= 10
+        if(upg9)cpm *= 10
         cpm *= ([1, 3, 15, 200, 4000])[data["thread-completions"]]
         cpm = Math.round(cpm)
-        if(data["general-red"])cpm *= 3
+        return cpm
+    },
+    cpm() {
+        let cpm = this.baseCpm()
+        if(calcMember.isRed())cpm *= calcMember.redPower()
         return cpm
     },
     goal() {
         return 24 * 100 ** data["member-completions"]
     },
     estimatedMembersNoMinmax() {
-        let originalRed = data["general-red"]
-        data["general-red"] = true
-        let cpm = this.cpm()
-        data["general-red"] = originalRed
+        let counts = calcGeneral.maxCounts()
+        let cpm = calcGeneral.expNumber(this.cpm())
         let goal = this.goal()
-        if(data["msg-upg8"] && data["msg-upg9"])return Math.ceil(goal / (cpm * 6))
-        return Math.ceil(goal / (cpm * 3))
+        if(cpm * (data["upg-has32"] ? counts : 1) >= goal) {
+            return 1
+        }
+        let countsNeeded = Math.ceil(goal / cpm)
+        let membersNeeded = Math.ceil(countsNeeded / (counts * 3))
+        return membersNeeded
     },
     estimatedMembers() {
         if(!data["member-minmax"])return this.estimatedMembersNoMinmax()
-        let originalRed = data["general-red"]
-        data["general-red"] = true
-        let rcpm = this.cpm()
+        let counts = calcGeneral.maxCounts() - this.isGreen() + data["upg-has31"]
+            - data["msg-upg8"] + (data["msg-upg8"] && data["msg-upg9"])
+        let baseCpm = this.baseCpm()
         let goal = this.goal()
-        if(rcpm >= goal) {
-            data["general-red"] = originalRed
+        if(baseCpm * calcMember.redPower() * (data["upg-has32"] ? counts : 1) >= goal) {
             return 1
         }
-        data["general-red"] = false
-        let gcpm = this.cpm()
-        let originalUpg9 = data["msg-upg9"]
-        data["msg-upg9"] = false
-        let lowcpm = this.cpm()
-        data["msg-upg9"] = originalUpg9
-        data["general-red"] = originalRed
-        let cpm = 0
-        if(data["msg-upg8"] && data["msg-upg9"]) {
-            // 6 counts with red role, 3 counts with green role
-            cpm = rcpm * 6 + gcpm * 3
-        }else if(data["msg-upg8"] || data["msg-upg9"]){
-            // 3 counts with red role, 3 counts with green role, 3 counts with green role and upg 8
-            cpm = rcpm * 3 + gcpm * 3 + lowcpm * 3
-        }else{
-            // 3 counts with red role, 3 counts with green role
-            cpm = rcpm * 3 + gcpm * 3
-        }
-        return Math.ceil(goal / cpm)
+        let greenRoleCount = !data["upg-has31"]
+        let noUpg9Count = (data["msg-upg8"] && !data["msg-upg9"]) || (!data["msg-upg8"] && data["msg-upg9"])
+        let cpmem = (counts * baseCpm * this.redPower() + greenRoleCount * baseCpm + noUpg9Count * this.cpm(false)) * 3
+        let membersNeeded = Math.ceil(goal / cpmem)
+        return membersNeeded
+    },
+    isRed() {
+        return data["general-role"] == "red" || data["upg-has31"]
+    },
+    redPower() {
+        let power = 3
+        if(data["upg-has45"])power *= 3
+        return power
+    },
+    isBlue() {
+        return data["general-role"] == "blue" || data["upg-has31"]
+    },
+    isGreen() {
+        return data["general-role"] == "green" || data["upg-has31"]
     }
 }
 
@@ -155,20 +194,29 @@ const calcThread = {
         }while(num > 0)
         return String.fromCodePoint(...arr.reverse())
     },
-    cpm() {
+    baseCpm() {
         let cpm = 1
         cpm *= 2 ** data["thread-coins-upg1"]
         cpm *= 2 ** data["thread-candy-caupg2"]
         cpm *= this.capacitors.pos()
-        if(data["general-red"])cpm *= 3
+        return cpm
+    },
+    cpm() {
+        let cpm = this.baseCpm()
+        if(data["general-red"])cpm *= calcMember.redPower()
         return cpm
     },
     coins: {
-        copm() {
+        baseCopm() {
             let copm = 1
             copm *= 4 ** data["thread-coins-upg3"]
             copm *= 2 ** data["thread-candy-caupg1"]
             copm *= calcThread.capacitors.neg()
+            return copm
+        },
+        copm() {
+            let copm = this.baseCopm()
+            if(data["upg-has44"] && calcMember.isRed())copm *= calcMember.redPower()
             return copm
         }
     },
@@ -177,10 +225,13 @@ const calcThread = {
             atk() {
                 let atk = 2 ** data["thread-candy-coupg1"]
                 atk *= calcThread.capacitors.neutral()
+                if(data["upg-has43"])atk *= 4
+                if(data["upg-has54"])atk *= 6
                 return atk
             },
             hp() {
                 let hp = 10 * 4 ** data["thread-candy-coupg2"]
+                if(data["upg-has53"])hp = Infinity
                 return hp
             },
             def() {
@@ -190,13 +241,17 @@ const calcThread = {
         },
         enemy: {
             atk() {
-                return 4 ** data["thread-candy-defeated"]
+                let atk = 4 ** data["thread-candy-defeated"]
+                if(data["upg-has53"])atk = 0
+                return atk
             },
             hp() {
                 return 20 * 3 ** data["thread-candy-defeated"]
             },
             def() {
-                return 2 ** data["thread-candy-defeated"]
+                let def = 2 ** data["thread-candy-defeated"]
+                if(data["upg-has52"])def /= 4
+                return def
             }
         },
         attacksToKill() {
@@ -210,6 +265,11 @@ const calcThread = {
         },
         countsToKill() {
             return this.attacksToKill() * 10
+        },
+        total() {
+            let candy = (3 ** data["thread-candy-defeated"] - 1) / 2
+            if(data["upg-has51"])candy *= 8
+            return candy
         }
     },
     capacitors: {
@@ -222,5 +282,41 @@ const calcThread = {
         neg() {
             return 5 ** data["thread-capacitors-neg"]
         }
+    }
+}
+
+/*
+    upgrades implemented
+    # = true
+    - = false
+    / = partially
+      = not supported (does nothing)
+    ? = idk
+
+      1 2 3 4 5
+    1 # # # # /
+    2 # # # # #
+    3   # # # #
+    4 ?   # # #
+    5   # ? # #
+*/
+const calcUpg = {
+    baseCpm() {
+        let cpm = 1
+        if(data["upg-has33"])cpm *= 2
+        if(data["upg-has22"])cpm *= 3
+        if(data["upg-has11"])cpm *= 10
+        if(data["upg-has55"])cpm *= 10
+        if(data["upg-has34"])cpm *= calcMsgs.upgAmt() + 1
+        if(data["upg-has24"])cpm *= calcTime.challengeSum() + 1
+        return cpm
+    },
+    roleBoost() {
+        let mult = 1
+        if(data["upg-has42"] && calcMember.isGreen())mult *= 5
+        return mult
+    },
+    cpm() {
+        return this.baseCpm() * this.roleBoost()
     }
 }

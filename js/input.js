@@ -48,6 +48,35 @@ function parseLetter(input, doUpdate=true, options={}) {
     }
 }
 
+function generateUpgGrid() {
+    let colorIndex = [[1,1,2,1,1],[1,0,0,0,1],[2,0,3,0,2],[1,0,0,0,1],[1,1,2,1,1]]
+    let colors = ["white", "red", "purple", "lime"]
+    for(let y=0;y<5;y++){
+        let rowDiv = document.createElement("div")
+        rowDiv.className = "row"
+
+        for(let x=0;x<5;x++){
+            let id = `upg-has${x+1}${y+1}`
+            let div = document.createElement("div")
+            div.className = "row"
+            div.style.width = "20px"
+            div.style.height = "20px"
+            div.style.margin = "4px"
+            div.style.border = "3px solid " + colors[colorIndex[y][x]]
+            
+            let input = document.createElement("input")
+            input.id = id
+            input.type = "checkbox"
+            input.style.margin = "0px"
+
+            div.appendChild(input)
+            rowDiv.appendChild(div)
+        }
+
+        elements["upg-grid"].appendChild(rowDiv)
+    }
+}
+
 const customInputs = {
     "count-help-isletter": ["change", false, (input) => {
         let chc = elements["count-help-current"]
@@ -138,6 +167,14 @@ const customInputs = {
         data[input.id] = input.valueAsNumber
         elements["thread-completions-revamt"].textContent = 3 - data[input.id]
         update()
+    }],
+    "upg-has31": ["change", false, input => {
+        data[input.id] = input.checked
+        elements["general-role-none"].disabled = input.checked
+        elements["general-role-red"].disabled = input.checked
+        elements["general-role-green"].disabled = input.checked
+        elements["general-role-blue"].disabled = input.checked
+        update()
     }]
 }
 
@@ -154,10 +191,13 @@ const customData = {
         elements["thread-convert-letter"].value = calcThread.convertLetterNotation(value)
     },
     "count-help-adv-cycle": () => {},
-    "count-help-adv-current": () => {}
+    "count-help-adv-current": () => {},
+    "general-role": () => {}
 }
 
 function initializeInputs() {
+    generateUpgGrid()
+
     Object.entries(customInputs).forEach(input => {
         let inputEle = document.getElementById(input[0])
         let ci = input[1]
@@ -171,6 +211,14 @@ function initializeInputs() {
             continue;
         }
         switch(input.type){
+        case "radio":
+            if(input.checked)placeholders[input.name] = input.value
+            input.checked = data[input.name] == input.value
+            input.addEventListener("change", () => {
+                data[input.name] = input.value
+                update()
+            })
+            break;
         case "checkbox":
             placeholders[input.id] = input.checked ?? false
             input.addEventListener("change", () => {
@@ -255,6 +303,10 @@ function initializeInputs() {
     elements["count-help-basic"].style.display = data["count-help-diff"] ? "none" : ""
     elements["count-help-adv"].style.display = data["count-help-diff"] ? "" : "none"
     elements["thread-completions-revamt"].textContent = 3 - data["thread-completions"]
+    elements["general-role-none"].disabled = data["upg-has31"]
+    elements["general-role-red"].disabled = data["upg-has31"]
+    elements["general-role-green"].disabled = data["upg-has31"]
+    elements["general-role-blue"].disabled = data["upg-has31"]
     initializeAdvContainer()
 }
 
