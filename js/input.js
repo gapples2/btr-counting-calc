@@ -192,7 +192,9 @@ const customData = {
     },
     "count-help-adv-cycle": () => {},
     "count-help-adv-current": () => {},
-    "general-role": () => {}
+    "general-role": function(_, value) {
+        elements[`general-role-${value}`].checked = true
+    }
 }
 
 function initializeInputs() {
@@ -281,13 +283,13 @@ function initializeInputs() {
 
     Object.entries(realData).forEach(arr => {
         let ele = document.getElementById(arr[0])
+        if(customData[arr[0]]) {
+            customData[arr[0]](ele, arr[1])
+            return;
+        }
         if(ele === null){
             delete realData[arr[0]]
         }else{
-            if(customData[arr[0]]) {
-                customData[arr[0]](ele, arr[1])
-                return;
-            }
             if(ele.type == "checkbox") {
                 ele.checked = arr[1]
             }else {
