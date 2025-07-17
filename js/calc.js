@@ -35,8 +35,15 @@ const calcGeneral = {
 }
 
 const calcMsgs = {
+    upgCosts: [1, 1, 3, 3, 5, 6, 9, 16, 23],
+    getUpgs() {
+        return Object.entries(realData).filter(arr => arr[0].startsWith("msg-upg") && arr[1] === true)
+    },
+    sumUpgCost() {
+        return this.getUpgs().reduce((p, c) => p + this.upgCosts[Number(c[0].slice(7)) - 1], 0)
+    },
     upgAmt() {
-        return Object.entries(realData).filter(arr => arr[0].startsWith("msg-upg") && arr[1] === true).length
+        return this.getUpgs().length
     },
     upgBoost() {
         let mult = 1
@@ -92,7 +99,7 @@ const calcTime = {
         return data["time-c1"] + data["time-c2"] + data["time-c3"]
     },
     msgBoost() {
-        return Math.sqrt(800 / data["time-least"]) * Math.sqrt(1600) ** this.factor()
+        return Math.sqrt(800 / data["time-least"]) * Math.sqrt(1600) ** data["time-factor"]
     },
     memberBoost() {
         let mult = Math.sqrt(data["time-zen"] / 1000)
@@ -115,6 +122,9 @@ const calcTime = {
     },
     cpm() {
         return this.baseCpm() * this.roleBoost()
+    },
+    goal() {
+        return 200 * 100 ** data["time-c3"]
     }
 }
 

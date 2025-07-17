@@ -1,7 +1,7 @@
 let elementIds = [
     "general-role-none", "general-role-red", "general-role-blue", "general-role-green", "general-counts",
-    "msg-chain",
-    "time-cpm", "time-factor",
+    "msg-chain", "msg-upg-cost",
+    "time-cpm", "time-factor-max", "time-counts",
     "member-cpm", "member-estimate",
     "thread-cpm",
         "thread-convert-number", "thread-convert-letter", "thread-completions-revamt",
@@ -35,10 +35,12 @@ function update() {
         return;
     }
     elements["msg-chain"].innerHTML = chain.map(arr => `<div class="column" style="padding-right:10px;height:75px"><div class="row" style="white-space:nowrap">${arr[0]} CPM</div><div class="row">${calcGeneral.formatWhole(arr[1])} msgs</div></div>`).join("")
+    elements["msg-upg-cost"].textContent = calcMsgs.sumUpgCost().toFixed(0)
 
     // time
     elements["time-cpm"].textContent = calcGeneral.expFormat(calcTime.cpm(), data["general-sigfig"] - 1)
-    elements["time-factor"].textContent = calcTime.factor().toFixed(2).replace(/\.?0+$/,"")
+    elements["time-factor-max"].textContent = calcTime.factor().toFixed(2).replace(/\.?0+$/,"")
+    elements["time-counts"].textContent = calcGeneral.expFormat(Math.ceil(calcTime.goal() / calcGeneral.expNumber(calcTime.cpm())))
 
     // member
     elements["member-cpm"].textContent = calcGeneral.expFormat(calcMember.cpm(), data["general-sigfig"] - 1)
