@@ -8,10 +8,11 @@ const calcGeneral = {
         if(!Number.isFinite(num))return "Infinity"
         if(num < 1000)return (Math.floor(num * 10 ** p) / 10 ** p).toFixed(0)
         let e = Math.floor(Math.log10(num))
-        let m = num / 10 ** e
         p = Math.min(p, e)
-        m = Math.floor(m * 10 ** p) / 10 ** p
-        m = m.toFixed(p).replace(/0+$/,"")
+        let div = 10 ** (e - p)
+        let m = Math.round((num - (num % div)) / div)
+        m = m.toFixed(0).replace(/0+$/,"")
+        m = m[0] + "." + m.slice(1)
         if(m.endsWith("."))m = m.slice(0, -1)
         return m + "e" + e.toFixed(0)
     },
@@ -156,7 +157,7 @@ const calcMember = {
         }
         let countsNeeded = Math.ceil(goal / cpm)
         let membersNeeded = Math.ceil(countsNeeded / (counts * 3))
-        return membersNeeded
+        return Math.max(membersNeeded, 2)
     },
     estimatedMembers() {
         if(!data["member-minmax"])return this.estimatedMembersNoMinmax()
@@ -169,9 +170,9 @@ const calcMember = {
         }
         let greenRoleCount = !data["upg-has31"]
         let noUpg9Count = (data["msg-upg8"] && !data["msg-upg9"]) || (!data["msg-upg8"] && data["msg-upg9"])
-        let cpmem = (counts * baseCpm * this.redPower() + greenRoleCount * baseCpm + noUpg9Count * this.cpm(false)) * 3
+        let cpmem = (counts * baseCpm * this.redPower() + greenRoleCount * baseCpm + noUpg9Count * this.baseCpm(false)) * 3
         let membersNeeded = Math.ceil(goal / cpmem)
-        return membersNeeded
+        return Math.max(membersNeeded, 2)
     },
     isRed() {
         return data["general-role"] == "red" || data["upg-has31"]
@@ -265,9 +266,9 @@ const calcThread = {
             }
         },
         attacksToKill() {
-            let player = data["thread-candy-player-hp"] / Math.round(this.enemy.atk() / this.player.def())
+            let player = Math.ceil(data["thread-candy-player-hp"] / Math.round(this.enemy.atk() / this.player.def()))
             if(this.player.def() > this.enemy.atk())player = Infinity
-            let enemy = data["thread-candy-enemy-hp"] / Math.round(this.player.atk() / this.enemy.def())
+            let enemy = Math.ceil(data["thread-candy-enemy-hp"] / Math.round(this.player.atk() / this.enemy.def()))
             if(this.enemy.def() > this.player.atk())enemy = Infinity
             if(!Number.isFinite(enemy))return Infinity
             if(player <= enemy)return Infinity
@@ -318,7 +319,7 @@ const calcUpg = {
         if(data["upg-has11"])cpm *= 10
         if(data["upg-has55"])cpm *= 10
         if(data["upg-has34"])cpm *= calcMsgs.upgAmt() + 1
-        if(data["upg-has24"])cpm *= calcTime.challengeSum() + 1
+        if(data["upg-has25"])cpm *= calcTime.challengeSum() + 1
         return cpm
     },
     roleBoost() {

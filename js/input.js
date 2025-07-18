@@ -165,7 +165,8 @@ const customInputs = {
     }],
     "thread-completions": ["input", 0, input => {
         data[input.id] = input.valueAsNumber
-        elements["thread-completions-revamt"].textContent = 3 - data[input.id]
+        elements["thread-completions-revamt"].textContent =
+            data[input.id] == 0 ? "not completed" : 4 - data[input.id]
         update()
     }],
     "upg-has31": ["change", false, input => {
@@ -183,7 +184,7 @@ const customData = {
         if(data["count-help-isletter"]) {
             input.value = calcThread.convertLetterNotation(value)
         }else{
-            input.value = value
+            input.value = calcGeneral.expFormat(value, 20)
         }
     },
     "thread-convert-number": function(input, value) {
@@ -304,7 +305,8 @@ function initializeInputs() {
     elements["count-help-basic-counters-amt"].textContent = data["count-help-basic-counters"]
     elements["count-help-basic"].style.display = data["count-help-diff"] ? "none" : ""
     elements["count-help-adv"].style.display = data["count-help-diff"] ? "" : "none"
-    elements["thread-completions-revamt"].textContent = 3 - data["thread-completions"]
+    elements["thread-completions-revamt"].textContent =
+        data["thread-completions"] == 0 ? "not completed" : 4 - data["thread-completions"]
     elements["general-role-none"].disabled = data["upg-has31"]
     elements["general-role-red"].disabled = data["upg-has31"]
     elements["general-role-green"].disabled = data["upg-has31"]

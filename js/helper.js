@@ -13,17 +13,17 @@ function basicCount(counters=data["count-help-basic-counters"], loopCounts=data[
         arr.push(
             data["count-help-isletter"] ?
             calcThread.convertLetterNotation(data["count-help-current"]) :
-            calcGeneral.expFormat(data["count-help-current"])
+            calcGeneral.expFormat(data["count-help-current"], 20)
         )
         if(data["count-help-addmsgnum"]) {
             data["count-help-msgnum"] = data["count-help-msgnum"] + 1
             arr[arr.length - 1] += " " + data["count-help-msgnum"].toFixed(0)
         }
     }
-    data["count-help-current"] += cpm * (counters - 1) * numCounts
+    data["count-help-current"] = Math.round(data["count-help-current"] + cpm * (counters - 1) * numCounts)
     chc.value = data["count-help-isletter"] ?
         calcThread.convertLetterNotation(data["count-help-current"]) :
-        calcGeneral.expFormat(data["count-help-current"])
+        calcGeneral.expFormat(data["count-help-current"], 20)
     if(data["count-help-addmsgnum"]) {
         data["count-help-msgnum"] += (counters - 1) * numCounts
         elements["count-help-msgnum"].value = data["count-help-msgnum"].toFixed(0)
@@ -195,12 +195,12 @@ function nextAdvCount() {
     let str = ""
     let cpm = getAdvCpm()
     if(data["count-help-isletter"]) {
-        count += cpm
+        count = Math.round(count + cpm)
         str = calcThread.convertLetterNotation(count)
     }else {
-        cpm = calcGeneral.expNumber(cpm)
-        count += cpm
-        str = calcGeneral.expFormat(count)
+        cpm = calcGeneral.expNumber(cpm, 20)
+        count = Math.round(count + cpm)
+        str = calcGeneral.expFormat(count, 20)
     }
     data["count-help-current"] = count
     if(data["count-help-addmsgnum"]) {
@@ -215,7 +215,7 @@ function updateAdvCount() {
     elements["count-help-current"].value = 
         data["count-help-isletter"] ?
         calcThread.convertLetterNotation(data["count-help-current"]) :
-        calcGeneral.expFormat(data["count-help-current"])
+        calcGeneral.expFormat(data["count-help-current"], 20)
     if(data["count-help-addmsgnum"]) {
         elements["count-help-msgnum"].value = data["count-help-msgnum"]
     }

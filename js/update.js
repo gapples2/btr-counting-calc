@@ -34,16 +34,16 @@ function update() {
         elements["msg-chain"].innerHTML = "<span>None.</span><br>"
         return;
     }
-    elements["msg-chain"].innerHTML = chain.map(arr => `<div class="column" style="padding-right:10px;height:75px"><div class="row" style="white-space:nowrap">${arr[0]} CPM</div><div class="row">${calcGeneral.formatWhole(arr[1])} msgs</div></div>`).join("")
+    elements["msg-chain"].innerHTML = chain.map(arr => `<div class="column" style="padding-right:10px;height:75px"><div class="row" style="white-space:nowrap">${arr[0]} CPM</div><div class="row">${calcGeneral.formatWhole(arr[1])} counts</div></div>`).join("")
     elements["msg-upg-cost"].textContent = calcMsgs.sumUpgCost().toFixed(0)
 
     // time
-    elements["time-cpm"].textContent = calcGeneral.expFormat(calcTime.cpm(), data["general-sigfig"] - 1)
+    elements["time-cpm"].textContent = calcGeneral.expFormat(calcTime.cpm())
     elements["time-factor-max"].textContent = calcTime.factor().toFixed(2).replace(/\.?0+$/,"")
     elements["time-counts"].textContent = calcGeneral.expFormat(Math.ceil(calcTime.goal() / calcGeneral.expNumber(calcTime.cpm())))
 
     // member
-    elements["member-cpm"].textContent = calcGeneral.expFormat(calcMember.cpm(), data["general-sigfig"] - 1)
+    elements["member-cpm"].textContent = calcGeneral.expFormat(calcMember.cpm())
     elements["member-estimate"].textContent = calcGeneral.expFormat(calcMember.estimatedMembers(), 10)
 
     // thread
