@@ -136,7 +136,7 @@ const calcMember = {
     baseCpm(upg9=data["msg-upg9"]) {
         let cpm = calcTime.memberBoost()
         if(upg9)cpm *= 10
-        cpm *= ([1, 3, 15, 200, 4000])[data["thread-completions"]]
+        cpm *= calcThread.memberBoost()
         cpm = Math.round(cpm)
         return cpm
     },
@@ -204,6 +204,12 @@ const calcThread = {
             arr.push(mod + 65)
         }while(num > 0)
         return String.fromCodePoint(...arr.reverse())
+    },
+    memberBoost() {
+        return ([1, 3, 15, 200, 4000])[data["thread-completions"]]
+    },
+    upgBoost() {
+        return Math.max(3 ** (3 - data["thread-completions"]), 1)
     },
     baseCpm() {
         let cpm = 1
@@ -305,7 +311,7 @@ const calcThread = {
     ? = idk
 
       1 2 3 4 5
-    1 # # # # /
+    1 # # # # #
     2 # # # # #
     3   # # # #
     4 ?   # # #
@@ -313,7 +319,7 @@ const calcThread = {
 */
 const calcUpg = {
     baseCpm() {
-        let cpm = 1
+        let cpm = calcThread.upgBoost()
         if(data["upg-has33"])cpm *= 2
         if(data["upg-has22"])cpm *= 3
         if(data["upg-has11"])cpm *= 10

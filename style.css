@@ -56,6 +56,12 @@ label {
     font-size: 22px;
 }
 
+.save-checkbox {
+    display: flex;
+    width: 190px;
+    justify-content: end;
+}
+
 
 #count-help-msgnum {
     width: 60px;
@@ -75,4 +81,22 @@ label {
 
 #count-help-adv-counts {
     width: 50px;
+}
+
+#save-export {
+    width: 200px;
+    height: 60px;
+    font-size: 20px;
+}
+
+#save-import {
+    width: 200px;
+    height: 60px;
+    font-size: 20px;
+}
+
+#save-import-input {
+    font-size: 10px;
+    min-width: 200px;
+    min-height: 50px;
 }

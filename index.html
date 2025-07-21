@@ -5,6 +5,7 @@
 
         <script src="js/calc.js"></script>
         <script src="js/helper.js"></script>
+        <script src="js/saving.js"></script>
         <script src="js/update.js" defer></script>
         <script src="js/input.js" defer></script>
 
@@ -421,6 +422,75 @@
             </div>
             <div class="row">
                 <button id="count-help-button">count (copy + paste)</button>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <span class="title">export / import</span>
+        </div>
+        <div class="row space-below">
+            <label for="save-hide">hide?</label>
+            <input id="save-hide" type="checkbox">
+        </div>
+        <div id="save">
+            <div class="row">
+                export settings (unchecked boxes will not be overwritten when importing this save)
+            </div>
+            <div class="row">
+                <div class="save-checkbox">
+                    <label>general?</label>
+                    <input id="save-export-general" type="checkbox" checked>
+                </div>
+            </div>
+            <div class="row">
+                <div class="save-checkbox">
+                    <label>least messages?</label>
+                    <input id="save-export-msg" type="checkbox" checked>
+                </div>
+            </div>
+            <div class="row">
+                <div class="save-checkbox">
+                    <label>least time?</label>
+                    <input id="save-export-time" type="checkbox" checked>
+                </div>
+            </div>
+            <div class="row">
+                <div class="save-checkbox">
+                    <label>least members?</label>
+                    <input id="save-export-member" type="checkbox" checked>
+                </div>
+            </div>
+            <div class="row">
+                <div class="save-checkbox">
+                    <label>least threads?</label>
+                    <input id="save-export-thread" type="checkbox" checked>
+                </div>
+            </div>
+            <div class="row">
+                <div class="save-checkbox">
+                    <label>least upgrades?</label>
+                    <input id="save-export-upg" type="checkbox" checked>
+                </div>
+            </div>
+            <div class="row">
+                <div class="save-checkbox">
+                    <label>counting helper?</label>
+                    <input id="save-export-count-help" type="checkbox">
+                </div>
+            </div>
+            <div class="row">
+                <button id="save-export">
+                    export save
+                </button>
+            </div>
+            <br>
+            <div class="row">
+                <textarea id="save-import-input"></textarea>
+            </div>
+            <div class="row">
+                <button id="save-import">
+                    import save
+                </button>
             </div>
         </div>
     </body>

@@ -14,7 +14,8 @@ let elementIds = [
     "upg-grid", "upg-cpm",
     "count-help-current", "count-help-basic-position", "count-help-basic-counters-amt", "count-help-basic-position-place",
     "count-help-msgnum", "count-help-basic", "count-help-adv", "count-help-adv-cycle",
-    "general", "msg", "time", "member", "thread", "upg", "count-help"
+    "save-import-input",
+    "general", "msg", "time", "member", "thread", "upg", "count-help", "save"
 ]
 let elements = {}
 
@@ -89,4 +90,5 @@ function update() {
     elements["thread"].style.display = data["thread-hide"] ? "none" : ""
     elements["upg"].style.display = data["upg-hide"] ? "none" : ""
     elements["count-help"].style.display = data["count-help-hide"] ? "none" : ""
+    elements["save"].style.display = data["save-hide"] ? "none" : ""
 }

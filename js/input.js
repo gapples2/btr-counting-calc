@@ -14,13 +14,6 @@ let data = new Proxy({
 
 let placeholders = {}
 
-const saveKey = "btr-counting-calc-save"
-function loadData() {
-    let save = localStorage.getItem(saveKey)
-    if(save === null)return;
-    realData = JSON.parse(save)
-}
-
 function parseNumeric(input, doUpdate=true, options={}) {
     let dataId = options.id ?? input.id
     let value = options.value ?? input.value
@@ -99,7 +92,9 @@ const customInputs = {
         if(data["count-help-isletter"])parseLetter(input, false)
         else parseNumeric(input, false)
     }],
-    "count-help-button": ["click", undefined, () => {
+    "count-help-button": ["click", undefined, button => {
+        button.disabled = true
+        setTimeout(() => button.disabled = false, 200)
         if(data["count-help-diff"]){
             let out = advCount()
             if(out !== undefined)navigator.clipboard.writeText(out)
@@ -107,7 +102,9 @@ const customInputs = {
             navigator.clipboard.writeText(basicCount())
         }
     }],
-    "count-help-init": ["click", undefined, () => {
+    "count-help-init": ["click", undefined, button => {
+        button.disabled = true
+        setTimeout(() => button.disabled = false, 200)
         if(data["count-help-diff"]){
             initAdvCount()
         }else{
@@ -176,6 +173,12 @@ const customInputs = {
         elements["general-role-green"].disabled = input.checked
         elements["general-role-blue"].disabled = input.checked
         update()
+    }],
+    "save-export": ["click", undefined, () => {
+        saving.export()
+    }],
+    "save-import": ["click", undefined, () => {
+        saving.import()
     }]
 }
 
@@ -316,10 +319,10 @@ function initializeInputs() {
 
 function init() {
     window.onbeforeunload = () => {
-        localStorage.setItem(saveKey, JSON.stringify(realData))
+        saving.save()
     }
 
-    loadData()
+    saving.load()
     initUpdate()
     initializeInputs()
     update()

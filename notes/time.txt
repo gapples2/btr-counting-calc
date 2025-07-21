@@ -1,4 +1,26 @@
 goal: 200
+unlocks at 4 total uc
 formula: round(sqrt(800 / time) * sqrt(1600) ^ factor)
+which multiplies least messages cpm
 min time: 0.5s
 
+cusTIMEizer: time challenges
+unlocks at 1st least time completion
+difficulty slots: unlocked at ??? seconds
+challenges:
+
+time compaction: multiplies time taken
+factor worth: 0.25
+multiplier: 1x, 2x, ???, ???, ???, ???
+
+slowmode: increased slowmode
+factor worth: 0.5
+time: 0, 5, 10, 15, 30, ???
+
+higher goal: 100x goal per level
+factor worth: 1
+
+time zen: 60s to count as high as possible
+unlocks at 17 total uc
+formula: round(sqrt(count / 1000))
+which multiplies least members cpm

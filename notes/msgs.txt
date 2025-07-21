@@ -3,8 +3,22 @@ effect formula: round(sqrt(800 / msgs) * sqrt(800) ^ completions)
 which multiplies msg cpm
 
 upgrade chips at:
-70 msgs
+70 msgs (first 5 goals)
 15 msgs
-3? msgs
+3 or 4 msgs (first 5 goals)
 1 msg
 
+respeccable upgrades (RUs):
+1. double cpm - 1 uc
+2. +1x cpm per RU - 1 uc
+3. triple cpm - 3 uc
+4. RU cpm mults ^0.75 affect least time cpm - 4 uc
+5. triple least time cpm - 5 uc
+6. /2 cpm, ^1.1 cpm - 6 uc
+7. 50x cpm - 9 uc
+8. +1 count - 16 uc
+9. 10x least members cpm
+
+unlocks:
+least time - 4 total uc
+time zen - 17 total uc
