@@ -209,7 +209,7 @@ const calcThread = {
         return ([1, 3, 15, 200, 4000])[data["thread-completions"]]
     },
     upgBoost() {
-        return Math.max(3 ** (3 - data["thread-completions"]), 1)
+        return Math.max(3 ** (data["thread-completions"] - 1), 1)
     },
     baseCpm() {
         let cpm = 1
