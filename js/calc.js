@@ -216,6 +216,7 @@ const calcThread = {
         cpm *= 2 ** data["thread-coins-upg1"]
         cpm *= 2 ** data["thread-candy-caupg2"]
         cpm *= this.capacitors.pos()
+        cpm *= calcUpg.threadBoost()
         return cpm
     },
     cpm() {
@@ -229,6 +230,7 @@ const calcThread = {
             copm *= 4 ** data["thread-coins-upg3"]
             copm *= 2 ** data["thread-candy-caupg1"]
             copm *= calcThread.capacitors.neg()
+            copm *= calcUpg.threadBoost()
             return copm
         },
         copm() {
@@ -332,6 +334,9 @@ const calcUpg = {
         let mult = 1
         if(data["upg-has42"] && calcMember.isGreen())mult *= 5
         return mult
+    },
+    threadBoost() {
+        return Math.round(Math.sqrt(306 / data["upg-least"]))
     },
     cpm() {
         return this.baseCpm() * this.roleBoost()

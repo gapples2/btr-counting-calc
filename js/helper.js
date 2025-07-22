@@ -190,7 +190,7 @@ function getAdvYou() {
     return readAdvProperty("you")
 }
 
-function nextAdvCount() {
+function nextAdvCount(dir = 1) {
     let count = data["count-help-current"]
     let str = ""
     let cpm = getAdvCpm()
@@ -204,10 +204,10 @@ function nextAdvCount() {
     }
     data["count-help-current"] = count
     if(data["count-help-addmsgnum"]) {
-        data["count-help-msgnum"] += 1
+        data["count-help-msgnum"] += dir
         str += " " + data["count-help-msgnum"].toFixed(0)
     }
-    data["count-help-adv-current"] = (data["count-help-adv-current"] + 1) % data["count-help-adv-cycle"].length
+    data["count-help-adv-current"] = (data["count-help-adv-current"] + dir) % data["count-help-adv-cycle"].length
     return str
 }
 
