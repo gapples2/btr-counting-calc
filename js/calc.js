@@ -325,7 +325,7 @@ const calcUpg = {
         if(data["upg-has11"])cpm *= 10
         if(data["upg-has55"])cpm *= 10
         if(data["upg-has34"])cpm *= calcMsgs.upgAmt() + 1
-        if(data["upg-has25"])cpm *= calcTime.challengeSum() + 1
+        if(data["upg-has25"])cpm *= data["time-slots"] + 1
         return cpm
     },
     roleBoost() {

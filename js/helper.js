@@ -6,7 +6,7 @@ function basicCount(counters=data["count-help-basic-counters"], loopCounts=data[
     let chc = elements["count-help-current"]
     let numCounts = data["count-help-basic-counts"]
     let arr = []
-    let cpm = data["count-help-isletter"] ? data["count-help-basic-cpm"] : calcGeneral.expNumber(data["count-help-basic-cpm"])
+    let cpm = data["count-help-basic-cpm"]
     for(let x=1;x<=loopCounts;x++){
         let count = data["count-help-current"] + cpm
         data["count-help-current"] = count

@@ -14,6 +14,11 @@ let data = new Proxy({
 
 let placeholders = {}
 
+function setPlaceholder(id, val, ele = elements[id]) {
+    placeholders[id] = val
+    ele.placeholder = val
+}
+
 function parseNumeric(input, doUpdate=true, options={}) {
     let dataId = options.id ?? input.id
     let value = options.value ?? input.value

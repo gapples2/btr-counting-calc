@@ -1,7 +1,7 @@
 let elementIds = [
     "general-role-none", "general-role-red", "general-role-blue", "general-role-green", "general-counts",
     "msg-chain", "msg-upg-cost",
-    "time-cpm", "time-factor-max", "time-counts",
+    "time-cpm", "time-factor-max", "time-counts", "time-slots",
     "member-cpm", "member-estimate",
     "thread-cpm",
         "thread-convert-number", "thread-convert-letter", "thread-completions-revamt",
@@ -42,6 +42,7 @@ function update() {
     elements["time-cpm"].textContent = calcGeneral.expFormat(calcTime.cpm())
     elements["time-factor-max"].textContent = calcTime.factor().toFixed(2).replace(/\.?0+$/,"")
     elements["time-counts"].textContent = calcGeneral.expFormat(Math.ceil(calcTime.goal() / calcGeneral.expNumber(calcTime.cpm())))
+    setPlaceholder("time-slots", calcTime.challengeSum())
 
     // member
     elements["member-cpm"].textContent = calcGeneral.expFormat(calcMember.cpm())
