@@ -49,9 +49,25 @@ function parseLetter(input, doUpdate=true, options={}) {
 function generateUpgGrid() {
     let colorIndex = [[1,1,2,1,1],[1,0,0,0,1],[2,0,3,0,2],[1,0,0,0,1],[1,1,2,1,1]]
     let colors = ["white", "red", "purple", "lime"]
+
+    let numberRow = document.createElement("div")
+    for(let y=0;y<5;y++){
+        let span = document.createElement("span")
+        span.style.display = "inline-block"
+        span.style.width = "20px"
+        span.style.height = "20px"
+        span.style.textAlign = "center"
+        span.style.paddingLeft = y == 0 ? "23px" : "12.5px"
+        span.textContent = ` ${y + 1}`
+
+        numberRow.appendChild(span)
+    }
+    elements["upg-grid"].appendChild(numberRow)
+
     for(let y=0;y<5;y++){
         let rowDiv = document.createElement("div")
         rowDiv.className = "row"
+        rowDiv.innerHTML = `<span style="width:20px;height:20px;text-align:center;margin-right:4px">${y + 1}0</span>`
 
         for(let x=0;x<5;x++){
             let id = `upg-has${x+1}${y+1}`
@@ -82,7 +98,7 @@ const customInputs = {
         if(input.checked) {
             chc.value = calcThread.convertLetterNotation(data["count-help-current"])
         }else{
-            chc.value = calcGeneral.expFormat(data["count-help-current"], 4)
+            chc.value = calcGeneral.expFormat(data["count-help-current"], 20)
         }
         chc.placeholder = input.checked ? "<empty>" : "0"
         chc.style.borderColor = "white"
@@ -218,6 +234,7 @@ function initializeInputs() {
     let inputs = document.getElementsByTagName("input")
     for(let x = 0; x < inputs.length; x++) {
         let input = inputs[x]
+        elements[input.id] = input
         if(customInputs[input.id]) {
             continue;
         }

@@ -31,33 +31,65 @@ const calcGeneral = {
         if(data['msg-upg8'])counts++
         if(calcMember.isGreen())counts++
         if(data["upg-has21"])counts += 2
+        counts += data["msg-buyable3"]
         return counts
+    },
+    sumLinear(initial, scaling, val) {
+        return (val * scaling / 2 + initial) * (val + 1)
     }
 }
 
 const calcMsgs = {
-    upgCosts: [1, 1, 3, 3, 5, 6, 9, 16, 23],
-    getUpgs() {
-        return Object.entries(realData).filter(arr => arr[0].startsWith("msg-upg") && arr[1] === true)
-    },
-    sumUpgCost() {
-        return this.getUpgs().reduce((p, c) => p + this.upgCosts[Number(c[0].slice(7)) - 1], 0)
-    },
-    upgAmt() {
-        return this.getUpgs().length
-    },
-    upgBoost() {
-        let mult = 1
-        if(data["msg-upg1"])mult *= 2
-        if(data["msg-upg2"])mult *= this.upgAmt() + 1
-        if(data["msg-upg3"])mult *= 3
-        if(data["msg-upg6"])mult /= 2
-        if(data["msg-upg7"])mult *= 50
-        return mult
+    uc: {
+        upgCosts: [1, 1, 3, 3, 5, 6, 9, 16, 23],
+        buyableCosts: [[5, 3], [3, 2], [6, 2], [10, 4]],
+        getUpgs() {
+            return Object.entries(realData).filter(arr => arr[0].startsWith("msg-upg") && arr[1] === true)
+        },
+        sumUpgCost() {
+            if(data["upg-has35"])return 0
+            return this.getUpgs().reduce((p, c) => p + this.upgCosts[Number(c[0].slice(7)) - 1], 0)
+        },
+        sumBuyableCost() {
+            let sum = 0
+            for(let x = 0; x < this.buyableCosts.length; x++) {
+                let cost = this.buyableCosts[x]
+                sum += calcGeneral.sumLinear(cost[0], cost[1], data[`msg-buyable${x + 1}`] - 1)
+            }
+            return sum
+        },
+        totalCost() {
+            return this.sumUpgCost() + this.sumBuyableCost()
+        },
+        upgAmt() {
+            return this.getUpgs().length
+        },
+        upgBoost() {
+            let mult = 1
+            if(data["msg-upg1"])mult *= 2
+            if(data["msg-upg2"])mult *= this.upgAmt() + 1
+            if(data["msg-upg3"])mult *= 3
+            if(data["msg-upg6"])mult /= 2
+            if(data["msg-upg7"])mult *= 50
+            return mult
+        },
+        fromMsgs() {
+            let msgs = data["msg-least"]
+            if(data["msg-completions"] < 3) { 
+                return (msgs <= 70) + (msgs <= 25) + (msgs <= 9) + (msgs <= 3) + (msgs <= 1)
+            }
+            return (msgs <= 15) + (msgs <= 1)
+        },
+        fromCompletions() {
+            return Math.min(data["msg-completions"], 3) * 5 + Math.max(data["msg-completions"] - 3, 0) * 2
+        },
+        total() {
+            return this.fromMsgs() + this.fromCompletions()
+        }
     },
     baseCpm() {
         let base = Math.sqrt(800) ** (data["msg-completions"] + 1) / Math.sqrt(data["msg-least"])
-        base *= this.upgBoost()
+        base *= this.uc.upgBoost()
         base *= calcTime.msgBoost()
         if(data["msg-upg6"])base **= 1.1
         return Math.round(base)
@@ -109,11 +141,12 @@ const calcTime = {
     },
     baseCpm() {
         let cpm = calcMember.timeBoost()
-        if(data["msg-upg4"])cpm *= Math.round(calcMsgs.upgBoost() ** 0.75)
+        if(data["msg-upg4"])cpm *= Math.round(calcMsgs.uc.upgBoost() ** 0.75)
         if(data["msg-upg5"])cpm *= 3
         cpm *= 3 ** data["thread-coins-upg2"]
         if(data["upg-has23"])cpm *= 3
-        return cpm
+        cpm *= 1.5 ** data["msg-buyable2"]
+        return Math.round(cpm)
     },
     roleBoost() {
         let mult = 1
@@ -137,6 +170,7 @@ const calcMember = {
         let cpm = calcTime.memberBoost()
         if(upg9)cpm *= 10
         cpm *= calcThread.memberBoost()
+        cpm *= 3 ** data["msg-buyable4"]
         cpm = Math.round(cpm)
         return cpm
     },
@@ -152,7 +186,7 @@ const calcMember = {
         let counts = calcGeneral.maxCounts()
         let cpm = calcGeneral.expNumber(this.cpm())
         let goal = this.goal()
-        if(cpm * (data["upg-has32"] ? counts : 1) >= goal) {
+        if(cpm * (data["upg-has32"] ? counts * 3 : 1) >= goal) {
             return 1
         }
         let countsNeeded = Math.ceil(goal / cpm)
@@ -165,7 +199,7 @@ const calcMember = {
             - data["msg-upg8"] + (data["msg-upg8"] && data["msg-upg9"])
         let baseCpm = this.baseCpm()
         let goal = this.goal()
-        if(baseCpm * calcMember.redPower() * (data["upg-has32"] ? counts : 1) >= goal) {
+        if(baseCpm * calcMember.redPower() * (data["upg-has32"] ? counts * 3 : 1) >= goal) {
             return 1
         }
         let greenRoleCount = !data["upg-has31"]
@@ -316,8 +350,8 @@ const calcThread = {
     1 # # # # #
     2 # # # # #
     3   # # # #
-    4 ?   # # #
-    5   # ? # #
+    4     # # #
+    5   # # # #
 */
 const calcUpg = {
     baseCpm() {
@@ -326,8 +360,9 @@ const calcUpg = {
         if(data["upg-has22"])cpm *= 3
         if(data["upg-has11"])cpm *= 10
         if(data["upg-has55"])cpm *= 10
-        if(data["upg-has34"])cpm *= calcMsgs.upgAmt() + 1
+        if(data["upg-has34"])cpm *= calcMsgs.uc.upgAmt() + 1
         if(data["upg-has25"])cpm *= data["time-slots"] + 1
+        cpm *= 2 ** data["msg-buyable1"]
         return cpm
     },
     roleBoost() {
@@ -340,5 +375,23 @@ const calcUpg = {
     },
     cpm() {
         return this.baseCpm() * this.roleBoost()
+    },
+    upgCost(id) {
+        if(id == 13 || id == 31 || id == 35 || id == 53)return 5
+        let div10 = Math.floor(id / 10)
+        let mod10 = id % 10
+        if(div10 == 1 || div10 == 5 || mod10 == 1 || mod10 == 5)return 2
+        return 1
+    },
+    sumUpgCosts() {
+        let sum = 0
+        for(let x = 0; x < 5; x++) {
+            for(let y = 0; y < 5; y++) {
+                if(data[`upg-has${x + 1}${y + 1}`]) {
+                    sum += this.upgCost(x * 10 + y + 11)
+                }
+            }
+        }
+        return sum
     }
 }

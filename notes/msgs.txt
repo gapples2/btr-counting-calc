@@ -3,9 +3,11 @@ effect formula: round(sqrt(800 / msgs) * sqrt(800) ^ completions)
 which multiplies msg cpm
 
 upgrade chips at:
-70 msgs (first 5 goals)
-15 msgs
-3 or 4 msgs (first 5 goals)
+70 msgs (first 3 goals)
+25 msgs (first 3 goals)
+15 msgs (after 3 goals)
+9 msgs (first 3 goals)
+3 msgs (first 3 goals)
 1 msg
 
 respeccable upgrades (RUs):

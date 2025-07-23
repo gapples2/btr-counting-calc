@@ -1,6 +1,6 @@
 let elementIds = [
     "general-role-none", "general-role-red", "general-role-blue", "general-role-green", "general-counts",
-    "msg-chain", "msg-upg-cost",
+    "msg-chain", "msg-upg-cost", "msg-upg-uc",
     "time-cpm", "time-factor-max", "time-counts", "time-slots",
     "member-cpm", "member-estimate",
     "thread-cpm",
@@ -11,7 +11,7 @@ let elementIds = [
         "thread-candy-player-trueatk", "thread-candy-enemy-trueatk",
         "thread-candy-attacks", "thread-candy-counts", "thread-candy-total",
         "thread-capacitors-pos-boost", "thread-capacitors-neutral-boost", "thread-capacitors-neg-boost",
-    "upg-grid", "upg-cpm",
+    "upg-grid", "upg-cpm", "upg-used",
     "count-help-current", "count-help-basic-position", "count-help-basic-counters-amt", "count-help-basic-position-place",
     "count-help-msgnum", "count-help-basic", "count-help-adv", "count-help-adv-cycle",
     "save-import-input",
@@ -36,7 +36,8 @@ function update() {
         return;
     }
     elements["msg-chain"].innerHTML = chain.map(arr => `<div class="column" style="padding-right:10px;height:75px"><div class="row" style="white-space:nowrap">${arr[0]} CPM</div><div class="row">${calcGeneral.formatWhole(arr[1])} counts</div></div>`).join("")
-    elements["msg-upg-cost"].textContent = calcMsgs.sumUpgCost().toFixed(0)
+    elements["msg-upg-cost"].textContent = calcMsgs.uc.totalCost().toFixed(0)
+    elements["msg-upg-uc"].textContent = calcMsgs.uc.total().toFixed(0)
 
     // time
     elements["time-cpm"].textContent = calcGeneral.expFormat(calcTime.cpm())
@@ -82,6 +83,7 @@ function update() {
 
     // upg
     elements["upg-cpm"].textContent = calcGeneral.expFormat(calcUpg.cpm())
+    elements["upg-used"].textContent = calcUpg.sumUpgCosts().toFixed(0)
 
     // tabs
     elements["general"].style.display = data["general-hide"] ? "none" : ""

@@ -3,9 +3,10 @@
     <head>
         <title>btr calc</title>
 
-        <script src="js/calc.js"></script>
-        <script src="js/helper.js"></script>
-        <script src="js/saving.js"></script>
+        <script src="js/calc.js" defer></script>
+        <script src="js/helper.js" defer></script>
+        <script src="js/saving.js" defer></script>
+        <script src="js/lzstring.js" defer></script>
         <script src="js/update.js" defer></script>
         <script src="js/input.js" defer></script>
 
@@ -70,11 +71,32 @@
                 <label for="msg-upg8">upg 8</label><input id="msg-upg8" type="checkbox">
                 <label for="msg-upg9">upg 9</label><input id="msg-upg9" type="checkbox">
             </div>
+            <div class="row">
+                <label>2x least upgrades cpm:</label>
+                <input id="msg-buyable1" placeholder="0">
+            </div>
+            <div class="row">
+                <label>1.5x least time cpm:</label>
+                <input id="msg-buyable2" placeholder="0">
+            </div>
+            <div class="row">
+                <label>+1 multi count:</label>
+                <input id="msg-buyable3" placeholder="0">
+            </div>
+            <div class="row">
+                <label>3x least members cpm:</label>
+                <input id="msg-buyable4" placeholder="0">
+            </div>
             <div class="row" style="width:100%">
                 <div class="overflow row" id="msg-chain" style="height:75px;justify-content:left;"></div>
             </div>
             <div class="row">
-                <span>upg loadout cost: <span id="msg-upg-cost">0</span> UC(s)</span>
+                <span>
+                    spent
+                    <span id="msg-upg-cost">0</span>
+                    /
+                    <span id="msg-upg-uc">0</span> UC(s)
+                </span>
             </div>
         </div>
         <br>
@@ -343,6 +365,12 @@
             <div class="row">
                 <span>
                     cpm: <span id="upg-cpm">1</span>
+                </span>
+            </div>
+            <div class="row">
+                <span>
+                    sprawlers used:
+                    <span id="upg-used">0</span>
                 </span>
             </div>
         </div>

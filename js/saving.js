@@ -23,7 +23,7 @@ const saving = {
         if(importStr.length == 0)return;
         let importData = {}
         try {
-            importData = JSON.parse(atob(importStr))
+            importData = JSON.parse(LZString.decompressFromBase64(importStr))
         }catch(e) {
             return e
         }
@@ -54,7 +54,7 @@ const saving = {
             let id = arr[0]
             return saving.replaceTest(categoryArr, id) && !id.endsWith("hide")
         }))
-        let exportStr = btoa(JSON.stringify(exportData))
+        let exportStr = LZString.compressToBase64(JSON.stringify(exportData))
         window.navigator.clipboard.writeText(exportStr)
     }
 }
