@@ -9,7 +9,7 @@ let elementIds = [
         "thread-candy-player-hp", "thread-candy-player-maxhp", "thread-candy-player-atk", "thread-candy-player-def",
         "thread-candy-enemy-hp", "thread-candy-enemy-maxhp", "thread-candy-enemy-atk", "thread-candy-enemy-def",
         "thread-candy-player-trueatk", "thread-candy-enemy-trueatk",
-        "thread-candy-attacks", "thread-candy-counts", "thread-candy-total",
+        "thread-candy-attacks", "thread-candy-counts", "thread-candy-total", "thread-candy-spent",
         "thread-capacitors-pos-boost", "thread-capacitors-neutral-boost", "thread-capacitors-neg-boost",
     "upg-grid", "upg-cpm", "upg-used",
     "count-help-current", "count-help-basic-position", "count-help-basic-counters-amt", "count-help-basic-position-place",
@@ -73,6 +73,7 @@ function update() {
     elements["thread-candy-attacks"].textContent = calcGeneral.formatWhole(calcThread.candy.attacksToKill())
     elements["thread-candy-counts"].textContent = calcGeneral.formatWhole(calcThread.candy.countsToKill())
     elements["thread-candy-total"].textContent = calcGeneral.expFormat(calcThread.candy.total())
+    elements["thread-candy-spent"].textContent = calcGeneral.expFormat(calcThread.candy.spent())
     // capacitors
     //elements["thread-capacitors-pos-amt"].textContent = data["thread-capacitors-pos"].toFixed(0)
     //elements["thread-capacitors-neutral-amt"].textContent = data["thread-capacitors-neutral"].toFixed(0)

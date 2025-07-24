@@ -47,7 +47,8 @@ const calcMsgs = {
             return Object.entries(realData).filter(arr => arr[0].startsWith("msg-upg") && arr[1] === true)
         },
         sumUpgCost() {
-            if(data["upg-has35"])return 0
+            // buyable-inator is always active now
+            if(data["upg-has35"] || true)return 0
             return this.getUpgs().reduce((p, c) => p + this.upgCosts[Number(c[0].slice(7)) - 1], 0)
         },
         sumBuyableCost() {
@@ -323,6 +324,11 @@ const calcThread = {
             let candy = (3 ** data["thread-candy-defeated"] - 1) / 2
             if(data["upg-has51"])candy *= 8
             return candy
+        },
+        spent() {
+            let upg1 = (6 ** data["thread-candy-caupg1"] - 1) / 5
+            let upg2 = (5 ** data["thread-candy-caupg2"] - 1) * 2.5
+            return upg1 + upg2
         }
     },
     capacitors: {
