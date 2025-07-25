@@ -101,6 +101,7 @@ const calcMsgs = {
         base *= calcTime.msgBoost()
         if(data["channel-i1"])base *= 100
         if(data["channel-i2"])base *= 100
+        if(data["channel-i3"])base *= 100
         if(data["msg-upg6"])base **= 1.1
         return Math.round(base)
     },
@@ -162,6 +163,7 @@ const calcTime = {
         if(!data["channel-g1"])cpm *= 1.5 ** data["msg-buyable2"]
         if(data["channel-i1"])cpm *= 100
         if(data["channel-i2"])cpm *= 100
+        if(data["channel-i3"])cpm *= 100
         if(data["channel-g1"])cpm *= 1e7
         return Math.round(cpm)
     },
@@ -192,6 +194,7 @@ const calcMember = {
         if(!data["channel-g1"])cpm *= 3 ** data["msg-buyable4"]
         if(data["channel-i1"])cpm *= 100
         if(data["channel-i2"])cpm *= 100
+        if(data["channel-i3"])cpm *= 100
         if(data["channel-g1"])cpm *= 1000
         if(data["channel-g2"])cpm *= 1e10
         cpm = Math.round(cpm)
@@ -279,6 +282,7 @@ const calcThread = {
         cpm *= calcUpg.threadBoost()
         if(data["channel-i1"])cpm *= 100
         if(data["channel-i2"])cpm *= 100
+        if(data["channel-i3"])cpm *= 100
         return cpm
     },
     cpm() {
@@ -293,6 +297,7 @@ const calcThread = {
             copm *= 2 ** data["thread-candy-caupg1"]
             copm *= calcThread.capacitors.neg()
             copm *= calcUpg.threadBoost()
+            if(data["channel-i3"])copm *= 10
             return copm
         },
         copm() {
@@ -457,6 +462,7 @@ const calcChannel = {
     baseCpm() {
         let cpm = 1
         if(data["channel-i1"])cpm *= 10
+        if(data["channel-i3"])cpm *= 200
         if(data["channel-g2"])cpm *= 20
         return cpm
     },
