@@ -62,6 +62,12 @@ label {
     justify-content: end;
 }
 
+.channel-cb {
+    width: 180px;
+    display: flex;
+    justify-content: end;
+}
+
 
 #count-help-msgnum {
     width: 60px;

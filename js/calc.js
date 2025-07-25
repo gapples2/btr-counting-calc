@@ -28,9 +28,9 @@ const calcGeneral = {
     },
     maxCounts() {
         let counts = 1
-        if(data['msg-upg8'])counts++
+        if(data['msg-upg8'] && !data["channel-g1"])counts++
         if(calcMember.isGreen())counts++
-        if(data["upg-has21"])counts += 2
+        if(calcUpg.has(21))counts += 2
         counts += data["msg-buyable3"]
         return counts
     },
@@ -63,9 +63,14 @@ const calcMsgs = {
             return this.sumUpgCost() + this.sumBuyableCost()
         },
         upgAmt() {
-            return this.getUpgs().length
+            if(data["channel-g1"])return 0
+            let amt = this.getUpgs().length
+            // account for buyable-inator
+            amt -= data["msg-upg1"] + data["msg-upg5"] + data["msg-upg8"] + data["msg-upg9"]
+            return amt
         },
         upgBoost() {
+            if(data["channel-g1"])return 1
             let mult = 1
             if(data["msg-upg1"])mult *= 2
             if(data["msg-upg2"])mult *= this.upgAmt() + 1
@@ -92,6 +97,7 @@ const calcMsgs = {
         let base = Math.sqrt(800) ** (data["msg-completions"] + 1) / Math.sqrt(data["msg-least"])
         base *= this.uc.upgBoost()
         base *= calcTime.msgBoost()
+        if(data["channel-i1"])base *= 100
         if(data["msg-upg6"])base **= 1.1
         return Math.round(base)
     },
@@ -127,32 +133,37 @@ const calcMsgs = {
 
 const calcTime = {
     factor() {
+        if(data["channel-g2"])return 0
         return data["time-c3"] + data["time-c2"] / 2 + data["time-c1"] / 4
     },
     challengeSum() {
+        if(data["channel-g2"])return 0
         return data["time-c1"] + data["time-c2"] + data["time-c3"]
     },
     msgBoost() {
+        if(data["channel-g2"])return 1
         return Math.sqrt(800 / data["time-least"]) * Math.sqrt(1600) ** data["time-factor"]
     },
     memberBoost() {
+        if(data["channel-g2"])return 1
         let mult = Math.sqrt(data["time-zen"] / 1000)
-        if(data["upg-has12"])mult **= 1.5
+        if(calcUpg.has(12))mult **= 1.5
         return mult
     },
     baseCpm() {
         let cpm = calcMember.timeBoost()
-        if(data["msg-upg4"])cpm *= Math.round(calcMsgs.uc.upgBoost() ** 0.75)
-        if(data["msg-upg5"])cpm *= 3
-        cpm *= 3 ** data["thread-coins-upg2"]
-        if(data["upg-has23"])cpm *= 3
-        cpm *= 1.5 ** data["msg-buyable2"]
+        if(data["msg-upg4"] && !data["channel-g1"])cpm *= Math.round(calcMsgs.uc.upgBoost() ** 0.75)
+        if(data["msg-upg5"] && !data["channel-g1"])cpm *= 3
+        if(!data["channel-g4"])cpm *= 3 ** data["thread-coins-upg2"]
+        if(calcUpg.has(23))cpm *= 3
+        if(!data["channel-g1"])cpm *= 1.5 ** data["msg-buyable2"]
+        if(data["channel-i1"])cpm *= 100
         return Math.round(cpm)
     },
     roleBoost() {
         let mult = 1
         if(calcMember.isRed())mult *= calcMember.redPower()
-        if(data["upg-has41"] && calcMember.isBlue())mult *= 5
+        if(calcUpg.has(41) && calcMember.isBlue())mult *= 5
         return mult
     },
     cpm() {
@@ -165,13 +176,15 @@ const calcTime = {
 
 const calcMember = {
     timeBoost() {
+        if(data["channel-g3"])return 1
         return Math.round(Math.sqrt(32) ** (data["member-completions"] + 1) / Math.sqrt(data["member-least"]))
     },
-    baseCpm(upg9=data["msg-upg9"]) {
+    baseCpm(upg9=data["msg-upg9"] && !data["channel-g1"]) {
         let cpm = calcTime.memberBoost()
         if(upg9)cpm *= 10
         cpm *= calcThread.memberBoost()
         cpm *= 3 ** data["msg-buyable4"]
+        if(data["channel-i1"])cpm *= 100
         cpm = Math.round(cpm)
         return cpm
     },
@@ -187,7 +200,7 @@ const calcMember = {
         let counts = calcGeneral.maxCounts()
         let cpm = calcGeneral.expNumber(this.cpm())
         let goal = this.goal()
-        if(cpm * (data["upg-has32"] ? counts * 3 : 1) >= goal) {
+        if(cpm * (calcUpg.has(32) ? counts * 3 : 1) >= goal) {
             return 1
         }
         let countsNeeded = Math.ceil(goal / cpm)
@@ -196,32 +209,33 @@ const calcMember = {
     },
     estimatedMembers() {
         if(!data["member-minmax"])return this.estimatedMembersNoMinmax()
-        let counts = calcGeneral.maxCounts() - this.isGreen() + data["upg-has31"]
-            - data["msg-upg8"] + (data["msg-upg8"] && data["msg-upg9"])
+        let countsFromMsgUpg = data["channel-g1"] ? 0 : data["msg-upg8"] + (data["msg-upg8"] && data["msg-upg9"])
+        let counts = calcGeneral.maxCounts() - this.isGreen() + calcUpg.has(31) + countsFromMsgUpg
         let baseCpm = this.baseCpm()
         let goal = this.goal()
-        if(baseCpm * calcMember.redPower() * (data["upg-has32"] ? counts * 3 : 1) >= goal) {
+        if(baseCpm * calcMember.redPower() * (calcUpg.has(32) ? counts * 3 : 1) >= goal) {
             return 1
         }
-        let greenRoleCount = !data["upg-has31"]
-        let noUpg9Count = (data["msg-upg8"] && !data["msg-upg9"]) || (!data["msg-upg8"] && data["msg-upg9"])
+        let greenRoleCount = !calcUpg.has(31)
+        let noUpg9Count =
+         data["channel-g1"] ? 1 : (data["msg-upg8"] && !data["msg-upg9"]) || (!data["msg-upg8"] && data["msg-upg9"])
         let cpmem = (counts * baseCpm * this.redPower() + greenRoleCount * baseCpm + noUpg9Count * this.baseCpm(false)) * 3
         let membersNeeded = Math.ceil(goal / cpmem)
         return Math.max(membersNeeded, 2)
     },
     isRed() {
-        return data["general-role"] == "red" || data["upg-has31"]
+        return !data["channel-g3"] && (data["general-role"] == "red" || calcUpg.has(31))
     },
     redPower() {
         let power = 3
-        if(data["upg-has45"])power *= 3
+        if(calcUpg.has(45))power *= 3
         return power
     },
     isBlue() {
-        return data["general-role"] == "blue" || data["upg-has31"]
+        return !data["channel-g3"] && (data["general-role"] == "blue" || calcUpg.has(31))
     },
     isGreen() {
-        return data["general-role"] == "green" || data["upg-has31"]
+        return !data["channel-g3"] && (data["general-role"] == "green" || calcUpg.has(31))
     }
 }
 
@@ -241,9 +255,11 @@ const calcThread = {
         return String.fromCodePoint(...arr.reverse())
     },
     memberBoost() {
+        if(data["channel-g4"])return 1
         return ([1, 3, 15, 200, 4000])[data["thread-completions"]]
     },
     upgBoost() {
+        if(data["channel-g4"])return 1
         return Math.max(3 ** (data["thread-completions"] - 1), 1)
     },
     baseCpm() {
@@ -252,6 +268,7 @@ const calcThread = {
         cpm *= 2 ** data["thread-candy-caupg2"]
         cpm *= this.capacitors.pos()
         cpm *= calcUpg.threadBoost()
+        if(data["channel-i1"])cpm *= 100
         return cpm
     },
     cpm() {
@@ -270,7 +287,7 @@ const calcThread = {
         },
         copm() {
             let copm = this.baseCopm()
-            if(data["upg-has44"] && calcMember.isRed())copm *= calcMember.redPower()
+            if(calcUpg.has(44) && calcMember.isRed())copm *= calcMember.redPower()
             return copm
         }
     },
@@ -279,13 +296,13 @@ const calcThread = {
             atk() {
                 let atk = 2 ** data["thread-candy-coupg1"]
                 atk *= calcThread.capacitors.neutral()
-                if(data["upg-has43"])atk *= 4
-                if(data["upg-has54"])atk *= 6
+                if(calcUpg.has(43))atk *= 4
+                if(calcUpg.has(54))atk *= 6
                 return atk
             },
             hp() {
                 let hp = 10 * 4 ** data["thread-candy-coupg2"]
-                if(data["upg-has53"])hp = Infinity
+                if(calcUpg.has(53))hp = Infinity
                 return hp
             },
             def() {
@@ -296,7 +313,7 @@ const calcThread = {
         enemy: {
             atk() {
                 let atk = 4 ** data["thread-candy-defeated"]
-                if(data["upg-has53"])atk = 0
+                if(calcUpg.has(53))atk = 0
                 return atk
             },
             hp() {
@@ -304,7 +321,7 @@ const calcThread = {
             },
             def() {
                 let def = 2 ** data["thread-candy-defeated"]
-                if(data["upg-has52"])def /= 4
+                if(calcUpg.has(52))def /= 4
                 return def
             }
         },
@@ -322,7 +339,7 @@ const calcThread = {
         },
         total() {
             let candy = (3 ** data["thread-candy-defeated"] - 1) / 2
-            if(data["upg-has51"])candy *= 8
+            if(calcUpg.has(51))candy *= 8
             return candy
         },
         spent() {
@@ -366,9 +383,9 @@ const calcUpg = {
         if(data["upg-has22"])cpm *= 3
         if(data["upg-has11"])cpm *= 10
         if(data["upg-has55"])cpm *= 10
-        if(data["upg-has34"])cpm *= calcMsgs.uc.upgAmt() + 1
+        if(data["upg-has34"] && !data["channel-g1"])cpm *= calcMsgs.uc.upgAmt() + 1
         if(data["upg-has25"])cpm *= data["time-slots"] + 1
-        cpm *= 2 ** data["msg-buyable1"]
+        if(!data["channel-g1"])cpm *= 2 ** data["msg-buyable1"]
         cpm = Math.round(cpm / 5 ** data["upg-cursed"])
         return cpm
     },
@@ -410,5 +427,24 @@ const calcUpg = {
         }
         amt = Math.max(amt - 2 * data["upg-cursed"], 0)
         return amt
+    },
+    has(id) {
+        return data["upg-has" + id] && !data["channel-g5"]
+    }
+}
+
+const calcChannel = {
+    baseCpm() {
+        let cpm = 1
+        if(data["channel-i1"])cpm *= 10
+        if(data["channel-i2"])cpm *= 10
+        return cpm
+    },
+    cpm() {
+        return this.baseCpm()
+    },
+    counts() {
+        if(data["channel-i2"])return calcGeneral.maxCounts()
+        return 1
     }
 }
