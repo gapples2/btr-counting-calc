@@ -185,13 +185,15 @@ const calcMember = {
         return Math.round(Math.sqrt(32) ** (data["member-completions"] + 1) / Math.sqrt(Math.max(data["member-least"], 0.5)))
     },
     baseCpm(upg9=data["msg-upg9"] && !data["channel-g1"]) {
-        let cpm = calcTime.memberBoost()
+        let cpm = 1
+        if(!data["channel-g2"])cpm *= calcTime.memberBoost()
         if(upg9)cpm *= 10
         cpm *= calcThread.memberBoost()
         if(!data["channel-g1"])cpm *= 3 ** data["msg-buyable4"]
         if(data["channel-i1"])cpm *= 100
         if(data["channel-i2"])cpm *= 100
         if(data["channel-g1"])cpm *= 1000
+        if(data["channel-g2"])cpm *= 1e10
         cpm = Math.round(cpm)
         return cpm
     },
@@ -455,13 +457,14 @@ const calcChannel = {
     baseCpm() {
         let cpm = 1
         if(data["channel-i1"])cpm *= 10
+        if(data["channel-g2"])cpm *= 20
         return cpm
     },
     cpm() {
         return this.baseCpm()
     },
     counts() {
-        if(data["channel-i2"])return calcGeneral.maxCounts()
+        if(data["channel-i2"])return calcGeneral.maxCounts() - calcMember.isGreen()
         return 1
     }
 }
