@@ -369,7 +369,7 @@ const calcUpg = {
         if(data["upg-has34"])cpm *= calcMsgs.uc.upgAmt() + 1
         if(data["upg-has25"])cpm *= data["time-slots"] + 1
         cpm *= 2 ** data["msg-buyable1"]
-        cpm = Math.round(cpm / 10 ** data["upg-cursed"])
+        cpm = Math.round(cpm / 5 ** data["upg-cursed"])
         return cpm
     },
     roleBoost() {
