@@ -31,7 +31,7 @@ const calcGeneral = {
         if(data['msg-upg8'] && !data["channel-g1"])counts++
         if(calcMember.isGreen())counts++
         if(calcUpg.has(21))counts += 2
-        counts += data["msg-buyable3"]
+        if(!data["channel-g1"])counts += data["msg-buyable3"]
         return counts
     },
     sumLinear(initial, scaling, val) {
