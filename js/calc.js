@@ -181,7 +181,7 @@ const calcMember = {
         return cpm
     },
     goal() {
-        return 24 * 100 ** data["member-completions"]
+        return 24 * 100 ** (data["member-completions"] + (data["member-least"] == 1))
     },
     estimatedMembersNoMinmax() {
         let counts = calcGeneral.maxCounts()
@@ -369,6 +369,7 @@ const calcUpg = {
         if(data["upg-has34"])cpm *= calcMsgs.uc.upgAmt() + 1
         if(data["upg-has25"])cpm *= data["time-slots"] + 1
         cpm *= 2 ** data["msg-buyable1"]
+        cpm = Math.round(cpm / 10 ** data["upg-cursed"])
         return cpm
     },
     roleBoost() {
@@ -399,5 +400,15 @@ const calcUpg = {
             }
         }
         return sum
+    },
+    upgAmt() {
+        let amt = calcMsgs.uc.upgAmt()
+        for(let x = 1; x <= 5; x++) {
+            for(let y = 1; y <= 5; y++) {
+                amt += data[`upg-has${x}${y}`]
+            }
+        }
+        amt = Math.max(amt - 2 * data["upg-cursed"], 0)
+        return amt
     }
 }
