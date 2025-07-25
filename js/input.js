@@ -200,6 +200,12 @@ const customInputs = {
     }],
     "save-import": ["click", undefined, () => {
         saving.import()
+    }],
+    "channel-g6": ["change", false, input => {
+        data[input.id] = input.checked
+        if(input.checked) {
+            alert("yay you win!")
+        }
     }]
 }
 
