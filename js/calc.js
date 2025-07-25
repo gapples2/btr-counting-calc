@@ -65,10 +65,11 @@ const calcMsgs = {
         upgAmt() {
             if(data["channel-g1"])return 0
             let amt = this.getUpgs().length
-            // account for buyable-inator
-            amt -= data["msg-upg1"] + data["msg-upg5"] + data["msg-upg8"] + data["msg-upg9"]
             return amt
         },
+        adjustedUpgAmt() {
+            return this.upgAmt() - (data["msg-upg1"] + data["msg-upg5"] + data["msg-upg8"] + data["msg-upg9"])
+        }, 
         upgBoost() {
             if(data["channel-g1"])return 1
             let mult = 1
@@ -179,7 +180,7 @@ const calcTime = {
 const calcMember = {
     timeBoost() {
         if(data["channel-g3"])return 1
-        return Math.round(Math.sqrt(32) ** (data["member-completions"] + 1) / Math.sqrt(data["member-least"]))
+        return Math.round(Math.sqrt(32) ** (data["member-completions"] + 1) / Math.sqrt(Math.max(data["member-least"], 0.5)))
     },
     baseCpm(upg9=data["msg-upg9"] && !data["channel-g1"]) {
         let cpm = calcTime.memberBoost()
@@ -424,7 +425,7 @@ const calcUpg = {
         return sum
     },
     upgAmt() {
-        let amt = calcMsgs.uc.upgAmt()
+        let amt = calcMsgs.uc.adjustedUpgAmt()
         for(let x = 1; x <= 5; x++) {
             for(let y = 1; y <= 5; y++) {
                 amt += data[`upg-has${x}${y}`]
