@@ -101,7 +101,7 @@ const calcMsgs = {
         return cpm
     },
     goal() {
-        return 200 * 1000 ** data["msg-completions"]
+        return 200 * 1000 ** (data["msg-completions"] + (data["msg-least"] == 1))
     },
     expectedMsgs(cpm=this.cpm(data)) {
         return Math.ceil(this.goal() / cpm)
@@ -378,7 +378,7 @@ const calcUpg = {
         return mult
     },
     threadBoost() {
-        return Math.round(Math.sqrt(306 / data["upg-least"]))
+        return Math.round(Math.sqrt(306 / Math.max(data["upg-least"], 0.5)))
     },
     cpm() {
         return this.baseCpm() * this.roleBoost()
