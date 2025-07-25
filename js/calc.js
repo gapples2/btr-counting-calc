@@ -98,6 +98,7 @@ const calcMsgs = {
         base *= this.uc.upgBoost()
         base *= calcTime.msgBoost()
         if(data["channel-i1"])base *= 100
+        if(data["channel-i2"])base *= 100
         if(data["msg-upg6"])base **= 1.1
         return Math.round(base)
     },
@@ -158,6 +159,7 @@ const calcTime = {
         if(calcUpg.has(23))cpm *= 3
         if(!data["channel-g1"])cpm *= 1.5 ** data["msg-buyable2"]
         if(data["channel-i1"])cpm *= 100
+        if(data["channel-i2"])cpm *= 100
         return Math.round(cpm)
     },
     roleBoost() {
@@ -185,6 +187,7 @@ const calcMember = {
         cpm *= calcThread.memberBoost()
         cpm *= 3 ** data["msg-buyable4"]
         if(data["channel-i1"])cpm *= 100
+        if(data["channel-i2"])cpm *= 100
         cpm = Math.round(cpm)
         return cpm
     },
@@ -269,6 +272,7 @@ const calcThread = {
         cpm *= this.capacitors.pos()
         cpm *= calcUpg.threadBoost()
         if(data["channel-i1"])cpm *= 100
+        if(data["channel-i2"])cpm *= 100
         return cpm
     },
     cpm() {
@@ -386,6 +390,7 @@ const calcUpg = {
         if(data["upg-has34"] && !data["channel-g1"])cpm *= calcMsgs.uc.upgAmt() + 1
         if(data["upg-has25"])cpm *= data["time-slots"] + 1
         if(!data["channel-g1"])cpm *= 2 ** data["msg-buyable1"]
+        cpm *= calcChannel.upgBoost()
         cpm = Math.round(cpm / 5 ** data["upg-cursed"])
         return cpm
     },
@@ -434,10 +439,17 @@ const calcUpg = {
 }
 
 const calcChannel = {
+    numAnnihilated() {
+        return data["channel-i1"] + data["channel-i2"] + data["channel-i3"] + data["channel-i4"] + 
+        data["channel-g1"] + data["channel-g2"] + data["channel-g3"] +
+        data["channel-g4"] + data["channel-g5"] + data["channel-g6"]
+    },
+    upgBoost() {
+        return 2 ** this.numAnnihilated()
+    },
     baseCpm() {
         let cpm = 1
         if(data["channel-i1"])cpm *= 10
-        if(data["channel-i2"])cpm *= 10
         return cpm
     },
     cpm() {
