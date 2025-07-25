@@ -32,6 +32,7 @@ const calcGeneral = {
         if(calcMember.isGreen())counts++
         if(calcUpg.has(21))counts += 2
         if(!data["channel-g1"])counts += data["msg-buyable3"]
+        else counts += 5
         return counts
     },
     sumLinear(initial, scaling, val) {
@@ -68,7 +69,7 @@ const calcMsgs = {
             return amt
         },
         adjustedUpgAmt() {
-            return this.upgAmt() - (data["msg-upg1"] + data["msg-upg5"] + data["msg-upg8"] + data["msg-upg9"])
+            return Math.max(this.upgAmt() - (data["msg-upg1"] + data["msg-upg5"] + data["msg-upg8"] + data["msg-upg9"]), 0)
         }, 
         upgBoost() {
             if(data["channel-g1"])return 1
@@ -161,6 +162,7 @@ const calcTime = {
         if(!data["channel-g1"])cpm *= 1.5 ** data["msg-buyable2"]
         if(data["channel-i1"])cpm *= 100
         if(data["channel-i2"])cpm *= 100
+        if(data["channel-g1"])cpm *= 1e7
         return Math.round(cpm)
     },
     roleBoost() {
@@ -186,9 +188,10 @@ const calcMember = {
         let cpm = calcTime.memberBoost()
         if(upg9)cpm *= 10
         cpm *= calcThread.memberBoost()
-        cpm *= 3 ** data["msg-buyable4"]
+        if(!data["channel-g1"])cpm *= 3 ** data["msg-buyable4"]
         if(data["channel-i1"])cpm *= 100
         if(data["channel-i2"])cpm *= 100
+        if(data["channel-g1"])cpm *= 1000
         cpm = Math.round(cpm)
         return cpm
     },
@@ -389,7 +392,7 @@ const calcUpg = {
         if(data["upg-has11"])cpm *= 10
         if(data["upg-has55"])cpm *= 10
         if(data["upg-has34"] && !data["channel-g1"])cpm *= calcMsgs.uc.upgAmt() + 1
-        if(data["upg-has25"])cpm *= data["time-slots"] + 1
+        if(data["upg-has25"] && !data["channel-g2"])cpm *= data["time-slots"] + 1
         if(!data["channel-g1"])cpm *= 2 ** data["msg-buyable1"]
         cpm *= calcChannel.upgBoost()
         cpm = Math.round(cpm / 5 ** data["upg-cursed"])
