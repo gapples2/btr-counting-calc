@@ -33,6 +33,7 @@ const calcGeneral = {
         if(calcUpg.has(21))counts += 2
         if(!data["channel-g1"])counts += data["msg-buyable3"]
         else counts += 5
+        if(data["channel-g3"])counts += 2
         return counts
     },
     sumLinear(initial, scaling, val) {
@@ -102,6 +103,7 @@ const calcMsgs = {
         if(data["channel-i1"])base *= 100
         if(data["channel-i2"])base *= 100
         if(data["channel-i3"])base *= 100
+        if(data["channel-g3"])base *= 10
         if(data["msg-upg6"])base **= 1.1
         return Math.round(base)
     },
@@ -165,6 +167,7 @@ const calcTime = {
         if(data["channel-i2"])cpm *= 100
         if(data["channel-i3"])cpm *= 100
         if(data["channel-g1"])cpm *= 1e7
+        if(data["channel-g3"])cpm *= 10
         return Math.round(cpm)
     },
     roleBoost() {
@@ -197,6 +200,7 @@ const calcMember = {
         if(data["channel-i3"])cpm *= 100
         if(data["channel-g1"])cpm *= 1000
         if(data["channel-g2"])cpm *= 1e10
+        if(data["channel-g3"])cpm *= 10
         cpm = Math.round(cpm)
         return cpm
     },
@@ -283,6 +287,7 @@ const calcThread = {
         if(data["channel-i1"])cpm *= 100
         if(data["channel-i2"])cpm *= 100
         if(data["channel-i3"])cpm *= 100
+        if(data["channel-g3"])cpm *= 10
         return cpm
     },
     cpm() {
@@ -313,6 +318,7 @@ const calcThread = {
                 atk *= calcThread.capacitors.neutral()
                 if(calcUpg.has(43))atk *= 4
                 if(calcUpg.has(54))atk *= 6
+                if(data["channel-g3"])atk *= 250
                 return atk
             },
             hp() {
@@ -403,6 +409,7 @@ const calcUpg = {
         if(!data["channel-g1"])cpm *= 2 ** data["msg-buyable1"]
         cpm *= calcChannel.upgBoost()
         if(data["channel-g1"])cpm *= 100
+        if(data["channel-g3"])cpm *= 10
         cpm = Math.round(cpm / 5 ** data["upg-cursed"])
         return cpm
     },
