@@ -408,6 +408,7 @@ const calcUpg = {
         if(data["upg-has25"] && !data["channel-g2"])cpm *= data["time-slots"] + 1
         if(!data["channel-g1"])cpm *= 2 ** data["msg-buyable1"]
         cpm *= calcChannel.upgBoost()
+        if(data["channel-i4"])cpm *= 10000
         if(data["channel-g1"])cpm *= 100
         if(data["channel-g3"])cpm *= 10
         cpm = Math.round(cpm / 5 ** data["upg-cursed"])
@@ -470,7 +471,10 @@ const calcChannel = {
         let cpm = 1
         if(data["channel-i1"])cpm *= 10
         if(data["channel-i3"])cpm *= 200
+        if(data["channel-i4"])cpm *= 1000
         if(data["channel-g2"])cpm *= 20
+        if(data["channel-g4"])cpm *= 5
+        if(data["channel-g5"])cpm *= 10
         return cpm
     },
     cpm() {
